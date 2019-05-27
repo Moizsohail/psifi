@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "1088467503482",
+    "firebase_url": "https://psifixi.firebaseio.com",
+    "project_id": "psifixi",
+    "storage_bucket": "psifixi.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1088467503482:android:867ed76bb0b65957",
+        "android_client_info": {
+          "package_name": "com.example.psifi"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1088467503482-ne4le0o9i9kvmag7414jsn6riqpdbk0c.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAcbwRWAphKKe-S3YES0dW6W4ls8RNRyLw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1088467503482-ne4le0o9i9kvmag7414jsn6riqpdbk0c.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
