@@ -2,6 +2,7 @@ import '../pages/notificationportal.dart';
 import '../pages/loginregisterpage.dart';
 import 'package:flutter/material.dart';
 import 'authentication.dart';
+//import 'package:firebase_messaging/firebase_messaging.dart';
 class Mappings extends StatefulWidget{
   final AuthImplementation _auth;
   Mappings(this._auth);
@@ -14,11 +15,21 @@ enum LoginState{
   notLoggedIn
 }
 class MappingsState extends State<Mappings>{
+  //final FirebaseMessaging _messaging = FirebaseMessaging();
+  
   //LoginState _loginState = LoginState.notLoggedIn;
   LoginState _loginState = LoginState.notLoggedIn;
   @override
   void initState(){
     super.initState();
+    
+    //FireBase Messaging
+    // _messaging.getToken().then((token){
+    //   print(token);
+    // });
+
+    
+    // FireBase Auth
     widget._auth.getCurrentUser().then((id)=>
       setState(()=>
         _loginState = (id == null? LoginState.loggedIn:LoginState.notLoggedIn)
@@ -27,6 +38,7 @@ class MappingsState extends State<Mappings>{
   }
   @override
   Widget build(BuildContext context) {
+    
     return new Scaffold(
       body: new StreamBuilder(
         stream: widget._auth.onAuthStateChanged(),
