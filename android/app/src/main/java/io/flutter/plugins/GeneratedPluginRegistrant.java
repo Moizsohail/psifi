@@ -4,6 +4,8 @@ import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.plugins.firebase.cloudfirestore.CloudFirestorePlugin;
 import io.flutter.plugins.firebaseauth.FirebaseAuthPlugin;
 import io.flutter.plugins.firebase.core.FirebaseCorePlugin;
+import io.flutter.plugins.firebasemessaging.FirebaseMessagingPlugin;
+import io.flutter.plugins.googlemaps.GoogleMapsPlugin;
 
 /**
  * Generated file. Do not edit.
@@ -16,6 +18,8 @@ public final class GeneratedPluginRegistrant {
     CloudFirestorePlugin.registerWith(registry.registrarFor("io.flutter.plugins.firebase.cloudfirestore.CloudFirestorePlugin"));
     FirebaseAuthPlugin.registerWith(registry.registrarFor("io.flutter.plugins.firebaseauth.FirebaseAuthPlugin"));
     FirebaseCorePlugin.registerWith(registry.registrarFor("io.flutter.plugins.firebase.core.FirebaseCorePlugin"));
+    FirebaseMessagingPlugin.registerWith(registry.registrarFor("io.flutter.plugins.firebasemessaging.FirebaseMessagingPlugin"));
+    GoogleMapsPlugin.registerWith(registry.registrarFor("io.flutter.plugins.googlemaps.GoogleMapsPlugin"));
   }
 
   private static boolean alreadyRegisteredWith(PluginRegistry registry) {
