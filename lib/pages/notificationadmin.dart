@@ -1,27 +1,31 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:psifi/utils/authentication.dart';
 
 class NotificationAdmin extends StatefulWidget{
+  final AuthImplementation _auth;
   final DocumentSnapshot _doc;
   final bool _edit;
-  NotificationAdmin(this._doc,this._edit);
+  NotificationAdmin(this._auth, this._doc,this._edit);
   @override
   State<StatefulWidget> createState() => NotificationAdminState();
 }
+
 class NotificationAdminState extends State<NotificationAdmin>{
   var _form = GlobalKey<FormState>();
   String _title = "";
   String _message = "";
   bool _submitted = false;
   @override
+  
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget._edit?"Edit":"Add"),
+        title: Text(widget._edit?"Edit \"${widget._doc['Description']}\"":"Add"),
       ),
       body: Form(
         key: _form,
-        child:Container(
+        child: Container(
           padding: EdgeInsets.symmetric(horizontal: 10.0),
           child:  ListView(
            // crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -40,8 +44,7 @@ class NotificationAdminState extends State<NotificationAdmin>{
                   }
                     return _submitted?null:createData;
                 }()
-              ),
-            
+              ),          
             ],
           ),
         )
@@ -64,12 +67,11 @@ class NotificationAdminState extends State<NotificationAdmin>{
       onSaved: onSaved,
     );
   }
+  
   void updateData() async{
     if(_form.currentState.validate()){
       _form.currentState.save();
-      setState(() {
-       _submitted = true; 
-      });
+      setState(() { _submitted = true; });
       await Firestore.instance.
         collection('Notifications').
         document(widget._doc.documentID).
@@ -77,11 +79,13 @@ class NotificationAdminState extends State<NotificationAdmin>{
         'Title':_title,
         'Description':_message,
         'Priority':widget._doc['Priority'],
+        'PublisherId':widget._doc['PublisherId'],
         'PostTime':widget._doc['PostTime']
         });
       Navigator.of(context).pop();
     }
   }
+  
   void createData() async{
     if (_form.currentState.validate()){
       _form.currentState.save();
@@ -89,10 +93,11 @@ class NotificationAdminState extends State<NotificationAdmin>{
         _submitted=true;
       });
       await Firestore.instance.collection('Notifications').add({
-        'Title':_title,
-        'Description':_message,
-        'Priority':1,
-        'PostTime':DateTime.now()
+        'Title': _title,
+        'Description': _message,
+        'Priority': 1,
+        'PublisherId':await widget._auth.getCurrentUserUID(),
+        'PostTime': DateTime.now()
       });
       Navigator.of(context).pop();
     }

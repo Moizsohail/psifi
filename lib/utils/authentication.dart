@@ -1,34 +1,39 @@
-import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+//import 'package:flutter/services.dart';
 
 abstract class AuthImplementation{
-  Future<String> SignIn(String email,String password);
-  Future<String> Register(String email,String password);
-  Future<String> getCurrentUser();
-  Future<void> signOut();
+  Future<String> signIn(String email,String password); //log in function, returns user's uid string
+  Future<String> signUp(String email,String password); //register/sign up function, returns user's uid string
+  Future<String> getCurrentUserUID(); //get current user UID string
+  Future<void> signOut(); // log out function
   Stream<FirebaseUser> onAuthStateChanged();
 }
+
 class Auth implements AuthImplementation{
-  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance; //FirebaseAuth object created
+  
   Stream<FirebaseUser>  onAuthStateChanged(){
     return _firebaseAuth.onAuthStateChanged;
   }
-  Future<String> SignIn(String email,String password) async{
-    FirebaseUser user = await _firebaseAuth.signInWithEmailAndPassword(email: email,password: password);
+  
+  Future<String> signIn(String _email,String _pass) async{
+    //given email & password returns the FirebaseUser on signIn
+    FirebaseUser user = await _firebaseAuth.signInWithEmailAndPassword(email: _email, password: _pass);
     return user.uid;
   }
-  Future<String> Register(String email,String password) async{
-    FirebaseUser user = await _firebaseAuth.createUserWithEmailAndPassword(email: email,password: password);
+
+  Future<String> signUp(String _email,String _pass) async{
+    //on registration/signUp, User created for given email and password, uid returned
+    FirebaseUser user = await _firebaseAuth.createUserWithEmailAndPassword(email: _email, password: _pass);
     return user.uid;
   }
-  Future<String> getCurrentUser() async{
+  
+  Future<String> getCurrentUserUID() async{
     FirebaseUser user = await _firebaseAuth.currentUser();
-    if (user == null){
-      return null;
-    }
-    //print(user.uid);
+    if (user == null)  return null; //current session user does not exist, then null returned, else current user's uid
     return user.uid;
   }
+
   Future<void> signOut() async{
     _firebaseAuth.signOut();
   }

@@ -1,61 +1,49 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:psifi/utils/authentication.dart';
 import 'package:psifi/utils/firestorehelper.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 import 'notificationadmin.dart';
 import 'notificationpage.dart';
+
 class NotificationPortal extends StatefulWidget{
   final AuthImplementation _auth;
-  final VoidCallback _onSignOut;
-  NotificationPortal(this._auth,this._onSignOut){
-    
-  }
+  final bool _isAdmin;
+  NotificationPortal(this._auth, this._isAdmin); //empty constructor body
   
   @override
   State<StatefulWidget> createState() => NotificationPortalState();
 }
+
 class NotificationPortalState extends State<NotificationPortal>{
-  bool _isAdmin = false;
+  final Directory tempDir = Directory.systemTemp;
   FirestoreHelper _firestore = FirestoreHelper("Notifications");
+
   @override
   void initState(){
     super.initState();
-    widget._auth.getCurrentUser().then((e){
-      print(e);
-      _isAdmin = "9pm3dNrzfxat1no1QhSN69zjBoF3" == e;
-    });
   }
+  
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
-      floatingActionButton: _isAdmin? FloatingActionButton(
-        child: Icon(Icons.add)
-        , onPressed: () {
-           Navigator.push(context,
-           MaterialPageRoute(builder: (context)=> NotificationAdmin(null,false)
-           ));
+      floatingActionButton: widget._isAdmin ? FloatingActionButton(
+        child: Icon(Icons.add), 
+        backgroundColor: Theme.of(context).primaryColor,
+        foregroundColor: Colors.black,
+        onPressed:(){
+           Navigator.push(context, MaterialPageRoute(builder: (context)=> NotificationAdmin(widget._auth, null, false)));
         },
       ):null,
-      appBar: AppBar(
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.time_to_leave),
-            onPressed: (){
-              widget._auth.signOut();
-              widget._onSignOut();
-            },
-          )
-        ],
-        title: Text("Notifications"),
-      ),
       body: getNotifs(),
     );
   }
+  
   String dateParser(DateTime fsdate){
     DateTime now = DateTime.now();
-    //DateTime.parse("1969-07-20 20:18:04Z")
     Duration diff = now.difference(fsdate);
     if (diff.inDays > 365){
       if ((diff.inDays ~/ 365) == 1){
@@ -90,145 +78,133 @@ class NotificationPortalState extends State<NotificationPortal>{
     }
     return "Just Now";
   }
-  Widget card(DocumentSnapshot doc){
-    var tapPosition;
-    return Container(
-      decoration:  BoxDecoration(
-        border: Border(
-          left: BorderSide(
-            color: (priority){
-              if (priority == 0){
-                return Colors.greenAccent;
-              }
-              if (priority == 1){
-                return Colors.blueAccent;
-              }
-              if (priority == 2){
-                return Colors.redAccent;
-              }
-            }(doc['Priority']),
-            width: 3.0,
-          ),
-          bottom: BorderSide(
-            color: Colors.black12,
-            width: 1.0,
-          ),
-        )
-      ),
-      child: InkWell(
-        onTapDown: (details){
-          tapPosition = details.globalPosition;
-        },
-        onLongPress: (){
-          if (!_isAdmin) return;
-          final RenderBox overlay = Overlay.of(context).context.findRenderObject();
-          showMenu(
-            context: context,
-            items: [
-              PopupMenuItem(child: Text("Update"),value: 1,),
-              PopupMenuItem(child: Text("Delete"),value: 2,)
-            ]
-            , position: RelativeRect.fromRect(tapPosition & Size(40,40), Offset.zero & overlay.size)
-            ).then((e){
-              switch (e){
-              case 1:
-                Navigator.push(context,
-                      MaterialPageRoute(builder: (context)=> NotificationAdmin(doc,true)
-                      ));
-                break;
-              case 2:
-                showDialog(
-                  context: context,
-                  builder: (context){
-                    return SimpleDialog(
-                      children: <Widget>[
-                        SizedBox(height: 10.0,),
-                        Center(child:Text("Are you sure you want to delete this?"),),
-                        SizedBox(height: 20.0,),
-                        Row(
-                        mainAxisAlignment: MainAxisAlignment.center,  
-                        children: <Widget>[
-                          RaisedButton(child: Text("Yes",style: TextStyle(color: Colors.white),),color: Colors.blueAccent, onPressed: () {
-                            _firestore.deleteData(doc);          
-                            Navigator.pop(context);
-                          },),
-                          SizedBox(width: 40.0,),
-                          RaisedButton(child: Text("No!",style: TextStyle(color: Colors.white),),color: Colors.redAccent,onPressed: () {
-                            Navigator.pop(context);
-                          },)  
-                        ],)
-                        
-                        ],
-                    );                 
-                  }
-                );
-                //_firestore.deleteData(doc);
-                break;
-              }
-              
-            });
-        },
-        onTap:(){
-
-          Navigator.push(context,
-           MaterialPageRoute(builder: (context)=> NotificationPage(doc)
-           ));
-        },
-        child:Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-          SizedBox(height:5),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            mainAxisSize: MainAxisSize.max,
-            children: <Widget>[
-              Text(doc['Title'],
-              style: TextStyle(fontSize: 30),
-              overflow: TextOverflow.ellipsis
-              ),
-              Text(dateParser(DateTime.fromMicrosecondsSinceEpoch(doc['PostTime'].seconds*1000000))),  
-              
-              
-            ]
-          ),
-          SizedBox(height:5),
-          Text(' ' + doc['Description'],
-            maxLines:2,
-            overflow: TextOverflow.ellipsis
-          ),
-          SizedBox(height:10)
-          ],
-        )
-      )
-    );
+  
+  Future<void> getUserPhoto(String fileName) async{
+    File file = File('${tempDir.path}/$fileName');
+    if (await file.exists()) return;
+    
+    final StorageReference ref = FirebaseStorage.instance.ref().child(fileName);
+    final StorageFileDownloadTask downloadTask = ref.writeToFile(file);
+    final int byteNumber = (await downloadTask.future).totalByteCount;
+    print(byteNumber);
   }
-  Widget getNotifs(){
+
+  Widget notifCard(DocumentSnapshot doc){
+    String fileName = doc['PublisherId'] + '.jpg'; //get image fileName from publisher's ID
+    print('Checking...');
+    getUserPhoto(fileName); //download image 
+    print('Downloading...');
+    return ListTile(
+      onTap: () { //tapping a notification opens up its (doc's) notification page
+        Navigator.push(context, MaterialPageRoute(builder: (context) => NotificationPage(doc)));
+      },      
+      leading: Hero(
+          child: CircleAvatar(
+            backgroundImage: ExactAssetImage("${tempDir.path}/$fileName"),
+          ),
+          tag: "lol"+doc.documentID,
+        ),
+      title: Text(doc['Title'],
+          style: TextStyle(fontSize: 30), overflow: TextOverflow.ellipsis),
+      trailing: Text(dateParser(DateTime.fromMicrosecondsSinceEpoch(
+          doc['PostTime'].seconds * 1000000))),
+      subtitle: Text(' ' + doc['Description'],
+          maxLines: 2, overflow: TextOverflow.ellipsis),
+    );
+  }     
+  
+Widget getNotifs() {
     //print(Firestore.instance.collection('tasks'));
+    var tapPosition;
     return Container(
       //padding: EdgeInsets.symmetric(horizontal:10.0),
       child: StreamBuilder(
         stream: Firestore.instance.collection('Notifications').snapshots(),
-        builder: (context, snapshot){
-          //print("YO"+snapshot.data.documents[0]['Title'].toString());
-          if (snapshot.hasError){
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
             return new Text("ERROR ${snapshot.error}");
           }
-          if (snapshot.hasData){
+          if (snapshot.hasData) {
             return ListView.builder(
+              physics: BouncingScrollPhysics(),
               itemCount: snapshot.data.documents.length,
-              itemBuilder:(context,index) =>
-                GestureDetector(
-                  onLongPress: (){
-                    
-                  },
-                  child: card(snapshot.data.documents[index])
-                ),
-                
+              itemBuilder: (context, index) => GestureDetector(
+                  onTapDown: (details) => tapPosition = details.globalPosition,
+                  onLongPress: () => _onLongPressMenu(tapPosition, snapshot.data.documents[index]),
+                  child: Container(
+                    padding: EdgeInsets.only(bottom: 2.0),
+                    child: Material(
+                      elevation: 2,
+                      child: notifCard(snapshot.data.documents[index])),
+                    )
+                  )
             );
           }
-          return Container();
+          return Center(child:CircularProgressIndicator());
         },
-      )
-    );
+      ));
+  }
+
+  void _onLongPressMenu(var tapPosition, DocumentSnapshot doc) async{
+    if (await widget._auth.getCurrentUserUID() != doc['PublisherId']) return;
+    final RenderBox overlay = Overlay.of(context).context.findRenderObject();
+    showMenu(
+      context: context,
+      items: [
+        PopupMenuItem(value: 1, child: Row(children: <Widget>[Icon(Icons.edit), Text("Edit")],),),
+        PopupMenuItem(value: 2, child: Row(children: <Widget>[Icon(Icons.delete), Text("Delete"),],),)
+      ],
+      position: RelativeRect.fromRect(
+          tapPosition & Size(40, 40), Offset.zero & overlay.size))
+      .then((e) {
+      switch (e) {
+        case 1:
+          Navigator.push(context, MaterialPageRoute(builder: (context) => NotificationAdmin(widget._auth,doc, true)));
+          break;
+        case 2:
+          showDialog(
+            context: context,
+            builder: (context) {
+              return SimpleDialog(
+                children: <Widget>[
+                  SizedBox(height: 10.0,),
+                  Center(child:Text("Are you sure you want to delete \"${doc['Description']}\"?", textAlign: TextAlign.center,),),
+                  SizedBox(height: 10.0,),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      RaisedButton(
+                        child: Text(
+                          "Yes",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        color: Colors.blueAccent,
+                        onPressed: () {
+                          _firestore.deleteData(doc);
+                          Navigator.pop(context);
+                        },
+                      ),
+                      SizedBox(
+                        width: 40.0,
+                      ),
+                      RaisedButton(
+                        child: Text(
+                          "No!",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        color: Colors.redAccent,
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                      )
+                    ],
+                  )
+                ],
+              );
+            });
+          //_firestore.deleteData(doc);
+          break;
+      }
+    });
   }
 }
