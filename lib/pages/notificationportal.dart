@@ -125,23 +125,25 @@ Widget getNotifs() {
             return new Text("ERROR ${snapshot.error}");
           }
           if (snapshot.hasData) {
-            return ListView.builder(
-              physics: BouncingScrollPhysics(),
-              itemCount: snapshot.data.documents.length,
-              itemBuilder: (context, index) => GestureDetector(
-                  onTapDown: (details) => tapPosition = details.globalPosition,
-                  onLongPress: () => _onLongPressMenu(tapPosition, snapshot.data.documents[index]),
-                  child: Container(
-                    padding: EdgeInsets.only(bottom: 2.0),
-                    child: Material(
-                      elevation: 2,
-                      child: notifCard(snapshot.data.documents[index])),
+              return ListView.builder(
+                physics: BouncingScrollPhysics(),
+                itemCount: snapshot.data.documents.length,
+                reverse: true,
+                itemBuilder: (context, index) => GestureDetector(
+                    onTapDown: (details) => tapPosition = details.globalPosition,
+                    onLongPress: () => _onLongPressMenu(tapPosition, snapshot.data.documents[index]),
+                    child: Container(
+                      padding: EdgeInsets.only(bottom: 2.0),
+                      child: Material(
+                        elevation: 2,
+                        child: notifCard(snapshot.data.documents[index])),
+                      )
                     )
-                  )
-            );
+              );
           }
           return Center(child:CircularProgressIndicator());
-        },
+          //}
+        }
       ));
   }
 
