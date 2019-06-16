@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'utils/mappings.dart';
 import 'utils/authentication.dart';
@@ -11,7 +12,25 @@ class MyApp extends StatelessWidget { //ROOT
     return MaterialApp(
       title: 'PSIFI XI',
       debugShowCheckedModeBanner:false,
-      theme: ThemeData(primaryColor: Colors.amber),
+      theme: ThemeData(
+        primaryColor: Colors.black, 
+        accentColor: Colors.amberAccent,
+        primaryTextTheme: TextTheme(
+          title: TextStyle(
+            color: Colors.amberAccent,
+          )
+        ),
+        iconTheme: IconThemeData(
+          color: Colors.white
+        ),
+        primaryIconTheme: IconThemeData(
+          color: Colors.white
+        ),
+        appBarTheme: AppBarTheme(
+          color: Colors.black
+        ),
+        bottomAppBarColor: Colors.red
+      ),
       //home: Temp(), google maps test
       home: Mappings(Auth()),
     );

@@ -19,9 +19,21 @@ class EventPageState extends State<EventPage>{
         Image(
             image: NetworkImage(widget._doc['LogoURL']),
             fit: BoxFit.cover,
+            height: 200,
         ),
-        Text(widget._doc['ShortDesc']),
-        Text(widget._doc['LongDesc']),
+        // Center(
+        //   child: CircleAvatar(
+        //     backgroundImage: NetworkImage(widget._doc['LogoURL']),
+        //     backgroundColor: Theme.of(context).accentColor,
+        //     maxRadius: 30,
+        //   ),
+        // ),
+        SizedBox(height: 8.0),
+        Text(' Description:',style: new TextStyle(fontSize: 14.0, color: Colors.grey)),
+        Text(' \"' + widget._doc['LongDesc'] + '\"', style: new TextStyle(fontSize: 16.0, fontStyle: FontStyle.italic)),
+        SizedBox(height: 14.0),
+        Text(' Event Heads:',style: new TextStyle(fontSize: 14.0, color: Colors.grey)),
+        Text(' TBA',style: new TextStyle(fontSize: 18.0)),   
       ],
     )
     

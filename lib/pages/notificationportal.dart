@@ -31,9 +31,8 @@ class NotificationPortalState extends State<NotificationPortal>{
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: widget._isAdmin ? FloatingActionButton(
-        child: Icon(Icons.add), 
+        child: Icon(Icons.add, color: Theme.of(context).accentColor,), 
         backgroundColor: Theme.of(context).primaryColor,
-        foregroundColor: Colors.black,
         onPressed:(){
            Navigator.push(context, MaterialPageRoute(builder: (context)=> NotificationAdmin(widget._auth, null, false)));
         },
@@ -101,11 +100,12 @@ class NotificationPortalState extends State<NotificationPortal>{
       leading: Hero(
           child: CircleAvatar(
             backgroundImage: ExactAssetImage("${tempDir.path}/$fileName"),
+            backgroundColor: Theme.of(context).accentColor,
           ),
           tag: "lol"+doc.documentID,
         ),
       title: Text(doc['Title'],
-          style: TextStyle(fontSize: 30), overflow: TextOverflow.ellipsis),
+          style: TextStyle(fontSize: 30), overflow: TextOverflow.ellipsis,),
       trailing: Text(dateParser(DateTime.fromMicrosecondsSinceEpoch(
           doc['PostTime'].seconds * 1000000))),
       subtitle: Text(' ' + doc['Description'],

@@ -27,9 +27,8 @@ class EventsPortalState extends State<EventsPortal>{
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: _isAdmin? FloatingActionButton(
-        child: Icon(Icons.add), 
-        backgroundColor: Theme.of(context).primaryColor,
-        foregroundColor: Colors.black,
+        child: Icon(Icons.add, color: Theme.of(context).primaryColor,), 
+        backgroundColor: Theme.of(context).accentColor,
         onPressed:(){
           //Adding events.
           Navigator.push(context, MaterialPageRoute(builder: (context)=> EventsAdmin(null,false)));
@@ -99,8 +98,8 @@ class EventsPortalState extends State<EventsPortal>{
         },
 
         child: EventCard(
-          title: new Text(doc['Title'],style: new TextStyle(fontSize: 20.0)),
-          shortDesc: new Text(doc['ShortDesc'], style:new TextStyle(fontSize: 14.0)),
+          title: new Text(' ' + doc['Title'],style: new TextStyle(fontSize: 30.0)),
+          shortDesc: new Text('   ' + doc['ShortDesc'], style:new TextStyle(fontSize: 15.0, fontStyle: FontStyle.italic)),
           logo: NetworkImage(doc['LogoURL']),
           //OR logo: AssetImage("images/techwars.png")
         ),
@@ -160,6 +159,7 @@ class EventCard extends StatelessWidget {
                 ),
                 this.title,
                 this.shortDesc,
+                SizedBox(height: 15.0),
               ],
           ),
     );

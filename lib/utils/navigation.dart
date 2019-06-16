@@ -62,6 +62,7 @@ class NavigationState extends State<Navigation> with SingleTickerProviderStateMi
           )
         ],
         title: Text(_title),
+        
       ),
       
       body: TabBarView(
@@ -75,7 +76,7 @@ class NavigationState extends State<Navigation> with SingleTickerProviderStateMi
       ),
       
       bottomNavigationBar: Material(
-        color: Colors.amber,
+        color: Theme.of(context).primaryColor,
         child: TabBar(
           controller: _tabController,
           tabs: <Widget>[

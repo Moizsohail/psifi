@@ -3,6 +3,7 @@ import 'package:flare_flutter/flare_actor.dart';
 import 'package:psifi/utils/firestorehelper.dart';
 import '../utils/authentication.dart';
 import 'package:flutter/material.dart';
+//import 'notificationadmin.dart';
 
 class LoginRegisterPage extends StatefulWidget{ //stateful
   final AuthImplementation _auth;
@@ -50,7 +51,7 @@ class LoginRegisterPageState extends State<LoginRegisterPage>{
       case LoginButtonState.normal: // Display centered text Login/Register depending on the current FormType
         return Center(
           child:Text(_formType==FormType.login ? "Login": "Register",
-            style: TextStyle(color: Colors.white),)
+            style: TextStyle(color: _formType==FormType.login ? Theme.of(context).accentColor : Theme.of(context).primaryColor),)
           );
         break;
       
@@ -116,8 +117,10 @@ class LoginRegisterPageState extends State<LoginRegisterPage>{
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
-        title: Text("PSIFI XI", style:TextStyle(color: Theme.of(context).primaryColor)),
-        backgroundColor: Colors.black,
+        title: Text(
+          _formType==FormType.login ? "PSIFI-XI Login" : "PSIFI-XI Register", 
+          style:TextStyle(color: _formType==FormType.login ? Theme.of(context).accentColor : Theme.of(context).primaryColor)),
+        backgroundColor: _formType==FormType.login ? Theme.of(context).primaryColor : Theme.of(context).accentColor,
       ),
       body: Container(
         padding: EdgeInsets.symmetric(horizontal: 10.0),
@@ -125,34 +128,67 @@ class LoginRegisterPageState extends State<LoginRegisterPage>{
           key:formKey,
           child: ListView(
             children: <Widget>[
-              SizedBox(height: 10,), //(key, width, height, child)
-              SizedBox(height: 20,), //sort of padding, empty sizedbox
+              SizedBox(height: 30), //sort of padding, empty sizedbox
+              
               TextFormField(
-                decoration: InputDecoration(labelText: "Email"), //placeholder decor
-                validator: (value){
-                  print(value);
-                  return value.isEmpty ? "Email should not be empty." : null;
+                decoration: new InputDecoration(
+                  labelText: "Enter Email",
+                  fillColor: Colors.white,
+                  border: new OutlineInputBorder(
+                    borderRadius: new BorderRadius.circular(25.0),
+                    borderSide: new BorderSide(
+                    ),
+                  ),
+                ),
+                validator: (val) {
+                  if(val.length==0) {
+                    return "Email should not be empty.";
+                  }else{
+                    return null;
+                  }
                 },
+                keyboardType: TextInputType.emailAddress,
+                style: new TextStyle(
+                  fontFamily: "Poppins",
+                ),
                 onSaved: (value){
                   print(value);
                   return _email = value;
                 }
               ),
-              SizedBox(height: 10,),
+              
+              SizedBox(height: 10),
+              
               TextFormField(
-                decoration: InputDecoration(labelText: "Password"),
-                validator: (value){
-                  return value.isEmpty ? "Password should not be empty." : null;
+                decoration: new InputDecoration(
+                  labelText: "Enter Password",
+                  fillColor: Colors.white,
+                  border: new OutlineInputBorder(
+                    borderRadius: new BorderRadius.circular(25.0),
+                    borderSide: new BorderSide(
+                    ),
+                  ),
+                ),
+                validator: (val) {
+                  if(val.length==0) {
+                    return "Password should not be empty.";
+                  }else{
+                    return null;
+                  }
                 },
+                keyboardType: TextInputType.text,
+                style: new TextStyle(
+                  fontFamily: "Poppins",
+                ),
                 onSaved: (value){
                   return _password = value;
                 }
               ),
               
-              SizedBox(height: 10,),
-              
+              SizedBox(height: 10),
+        
               RaisedButton( //main login button
-                color: Theme.of(context).primaryColor,
+                color: _formType==FormType.login ? Theme.of(context).primaryColor : Theme.of(context).accentColor,
                 padding: EdgeInsets.all(5),
                 child: Container(
                   height: 30.0,

@@ -1,5 +1,5 @@
 #Internal package file, do not edit.
-#Sat Jun 15 23:58:05 PKT 2019
+#Sun Jun 16 18:48:55 PKT 2019
 8.base=C\:\\ITApp\\psifi\\build\\app\\intermediates\\merged_assets\\debug\\mergeDebugAssets\\out
 2.base=C\:\\ITApp\\psifi\\build\\app\\intermediates\\merged_assets\\debug\\mergeDebugAssets\\out
 0.path=lib/x86/libflutter.so

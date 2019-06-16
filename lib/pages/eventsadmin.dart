@@ -55,7 +55,7 @@ class EventsAdminState extends State<EventsAdmin>{
       ),
     );
   }
-  
+
   TextFormField buildTextFormField(String text,Function onSaved){
     return TextFormField(
       initialValue: widget._edit ? widget._doc[text]:null,
@@ -71,7 +71,7 @@ class EventsAdminState extends State<EventsAdmin>{
       onSaved: onSaved,
     );
   }
-  
+
   void updateData() async{
     if(_form.currentState.validate()){
       _form.currentState.save();
