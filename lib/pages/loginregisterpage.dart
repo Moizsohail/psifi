@@ -15,7 +15,7 @@ class LoginRegisterPage extends StatefulWidget{ //stateful
 
 //enums for state toggles
 enum FormType{ login, register }
-enum LoginButtonState{ normal, loading, success }
+enum LoginButtonState{ normal, loading, success, error}
 
 class LoginRegisterPageState extends State<LoginRegisterPage>{
   LoginButtonState _loginButtonState = LoginButtonState.normal; //normal initially
@@ -53,16 +53,16 @@ class LoginRegisterPageState extends State<LoginRegisterPage>{
           child:Text(_formType==FormType.login ? "Login": "Register",
             style: TextStyle(color: _formType==FormType.login ? Theme.of(context).accentColor : Theme.of(context).primaryColor),)
           );
-        break;
+        
       
-      default: // Else return a container with the animated button box (FlareActor "loadingandok.flr" used)
-        return Container( // with the animation played being either "loading" / "ok" depending on the loginButtonState
-          height: 40,
-          padding: EdgeInsets.symmetric(vertical:2.0),
-          child:FlareActor("animations/loadingandok.flr",
-            fit: BoxFit.contain, 
-            color: Colors.white,
-            animation: _loginButtonState == LoginButtonState.loading ? "loading":"ok",
+      default:
+        return Container(
+            height: 40,
+            padding: EdgeInsets.symmetric(vertical:2.0),
+            child:FlareActor("animations/loadingandok.flr",
+              fit: BoxFit.contain,
+              //olor: Colors.white,
+              animation: _loginButtonState == LoginButtonState.loading ? "loading":_loginButtonState == LoginButtonState.success?"ok":"error",
           ),
         );
         break;
@@ -78,8 +78,15 @@ class LoginRegisterPageState extends State<LoginRegisterPage>{
           widget._auth.signIn(_email,_password).then((e){
             setState(()=>_loginButtonState = LoginButtonState.success); //on successful sign in
             widget._onLoggedIn();
-           // _firestore.addUnqiueData({}, "key");
+           
           }).catchError((e){
+            final snackBar = SnackBar(
+              content: Text(e.message,style: TextStyle(color: Theme.of(context).primaryColor)),
+              backgroundColor: Theme.of(context).accentColor
+            );
+            Scaffold.of(context).showSnackBar(snackBar);
+            
+            setState(()=>_loginButtonState = LoginButtonState.error);
             print("Error validating login form data: ${e.toString()}"); //HAHAH
             setState(()=>_loginButtonState = LoginButtonState.normal);
           });
@@ -88,7 +95,18 @@ class LoginRegisterPageState extends State<LoginRegisterPage>{
         case FormType.register:
           widget._auth.signUp(_email,_password).then((e)=>
             widget._onLoggedIn()
-          ).catchError((e)=>print("Error validating registration form data: ${e.toString()}"));
+          ).catchError((e){
+            final snackBar = SnackBar(
+              content: Text(e.message,style: TextStyle(color: Theme.of(context).accentColor,)),
+              backgroundColor: Theme.of(context).primaryColor,
+              
+            );
+            Scaffold.of(context).showSnackBar(snackBar);
+            
+            setState(()=>_loginButtonState = LoginButtonState.error);
+            
+          }
+          );
           break;
       }
     }
@@ -135,7 +153,6 @@ class LoginRegisterPageState extends State<LoginRegisterPage>{
                   labelText: "Enter Email",
                   fillColor: Colors.white,
                   border: new OutlineInputBorder(
-                    borderRadius: new BorderRadius.circular(25.0),
                     borderSide: new BorderSide(
                     ),
                   ),
@@ -164,7 +181,7 @@ class LoginRegisterPageState extends State<LoginRegisterPage>{
                   labelText: "Enter Password",
                   fillColor: Colors.white,
                   border: new OutlineInputBorder(
-                    borderRadius: new BorderRadius.circular(25.0),
+                    
                     borderSide: new BorderSide(
                     ),
                   ),
