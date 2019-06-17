@@ -5,7 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:psifi/utils/authentication.dart';
 import 'package:psifi/utils/firestorehelper.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-
+import '../utils/cachedImageProvider.dart';
 import 'notificationadmin.dart';
 import 'notificationpage.dart';
 
@@ -19,7 +19,8 @@ class NotificationPortal extends StatefulWidget{
 }
 
 class NotificationPortalState extends State<NotificationPortal>{
-  final Directory tempDir = Directory.systemTemp;
+  bool firstTime = true;
+  CachedImageProvider _imageProvider = CachedImageProvider();
   FirestoreHelper _firestore = FirestoreHelper("Notifications");
 
   @override
@@ -78,28 +79,23 @@ class NotificationPortalState extends State<NotificationPortal>{
     return "Just Now";
   }
   
-  Future<void> getUserPhoto(String fileName) async{
-    File file = File('${tempDir.path}/$fileName');
-    if (await file.exists()) return;
-    
-    final StorageReference ref = FirebaseStorage.instance.ref().child(fileName);
-    final StorageFileDownloadTask downloadTask = ref.writeToFile(file);
-    final int byteNumber = (await downloadTask.future).totalByteCount;
-    print(byteNumber);
-  }
+  
 
   Widget notifCard(DocumentSnapshot doc){
     String fileName = doc['PublisherId'] + '.jpg'; //get image fileName from publisher's ID
-    print('Checking...');
-    getUserPhoto(fileName); //download image 
-    print('Downloading...');
+    this._imageProvider.addName(fileName).then((isDownloaded){
+        if(isDownloaded){
+          setState(() {});
+        }
+    });
+    print("before");
     return ListTile(
       onTap: () { //tapping a notification opens up its (doc's) notification page
         Navigator.push(context, MaterialPageRoute(builder: (context) => NotificationPage(doc)));
       },      
       leading: Hero(
           child: CircleAvatar(
-            backgroundImage: ExactAssetImage("${tempDir.path}/$fileName"),
+            backgroundImage: this._imageProvider.getImage(fileName),
             backgroundColor: Theme.of(context).accentColor,
           ),
           tag: "lol"+doc.documentID,
@@ -116,6 +112,9 @@ class NotificationPortalState extends State<NotificationPortal>{
 Widget getNotifs() {
     //print(Firestore.instance.collection('tasks'));
     var tapPosition;
+    /*
+      Wait for the downloads finish.
+     */
     return Container(
       //padding: EdgeInsets.symmetric(horizontal:10.0),
       child: StreamBuilder(
