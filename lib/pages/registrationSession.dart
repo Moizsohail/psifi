@@ -56,13 +56,40 @@ class RegistrationsSessionState extends State<RegistrationsSession> {
   Widget page1() {
     return Container(
         padding: EdgeInsets.only(left: 5.0, right: 5.0, top: 5.0),
-        child: ListView(
-          children: <Widget>[
-            textField("First Name", (value) {}, TextInputType.text),
-            textField("Last Name", (value) {}, TextInputType.text),
-            DateCustomField("Date Of Birth"),
-            DropdownCustomField('a',['a','c'])
-          ],
-        ));
+        child: Form(
+            key: formKey,
+            child: ListView(
+              children: <Widget>[
+                textField("First Name", (value) {}, TextInputType.text),
+                textField("Last Name", (value) {}, TextInputType.text),
+                DateCustomField("Date Of Birth"),
+                DropdownCustomField(
+                    'Are you applying through a School (S), University (U) or Privately (P)',
+                    'S',
+                    ['S', 'U', 'P']),
+                DropdownCustomField('Team Members', '3', ['3', '4', '5']),
+                DropdownCustomField(
+                    'Will a Faculty Adviser accompany you to LUMS?',
+                    'Y',
+                    ['Y', 'N']),
+                Text('Faculty Advisor Form: ## WILL BE ADDED LATER'),
+                textField(
+                    "Institution Name", (value) {}, TextInputType.multiline),
+                textField(
+                    "Institution City", (value) {}, TextInputType.multiline),
+                textField("Institution Email", (value) {},
+                    TextInputType.emailAddress),
+                textField("Principal Email Address", (value) {},
+                    TextInputType.emailAddress),
+                textField("Institution Phone Number", (value) {},
+                    TextInputType.phone),
+                textField(
+                    "Complete Address Of Institution",
+                    (value) {},
+                    TextInputType
+                        .multiline), // break this into smaller sections like on cofnito
+                        
+              ],
+            )));
   }
 }

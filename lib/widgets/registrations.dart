@@ -88,7 +88,8 @@ class DateCustomFieldState extends State<DateCustomField> {
 class DropdownCustomField extends StatefulWidget {
   final List<String> _options;
   final String _option;
-  DropdownCustomField(this._option,this._options);
+  final String _label;
+  DropdownCustomField(this._label, this._option, this._options);
   @override
   State<StatefulWidget> createState() {
     return DropdownCustomFieldState();
@@ -107,31 +108,33 @@ class DropdownCustomFieldState extends State<DropdownCustomField> {
   Widget build(BuildContext context) {
     return new FormField(
       builder: (FormFieldState state) {
-        return InputDecorator(
-          decoration: InputDecoration(
-            icon: const Icon(Icons.color_lens),
-            labelText: 'Color',
-          ),
-          isEmpty: currOption == '',
-          child: new DropdownButtonHideUnderline(
-            child: new DropdownButton(
-              value: currOption,
-              isDense: true,
-              onChanged: (String newValue) {
-                setState(() {
-                  currOption = newValue;
-                  state.didChange(newValue);
-                });
-              },
-              items: widget._options.map((String value) {
-                return new DropdownMenuItem(
-                  value: value,
-                  child: new Text(value),
-                );
-              }).toList(),
-            ),
-          ),
-        );
+        return 
+            InputDecorator(
+              decoration: InputDecoration(
+                labelText: widget._label,
+                labelStyle: TextStyle()
+              ),
+              isEmpty: currOption == '',
+              child: new DropdownButtonHideUnderline(
+                child: new DropdownButton(
+                  value: currOption,
+                  isDense: true,
+                  onChanged: (String newValue) {
+                    setState(() {
+                      currOption = newValue;
+                      state.didChange(newValue);
+                    });
+                  },
+                  items: widget._options.map((String value) {
+                    return new DropdownMenuItem(
+                      value: value,
+                      child: new Text(value),
+                    );
+                  }).toList(),
+                ),
+              ),
+            )
+          ;
       },
     );
   }
