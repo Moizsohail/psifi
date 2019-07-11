@@ -1,10 +1,24 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:image_picker/image_picker.dart';
 // This file contains widgets for use in the registration session.
+
+
+// create a dictionary that stores variables and then send it of to a file for resuming
+Widget imageField(String label,Function getImage){
+  return RaisedButton(
+    onPressed: ()async{
+      
+      var galleryFile = await ImagePicker.pickImage(source:ImageSource.gallery);
+    },
+    child: Text("Pick Image"),
+  );
+}
 
 Widget textField(String label, Function callback, TextInputType keyboardType) {
   return Container(
-      margin: EdgeInsets.only(bottom: 5.0),
+      margin: EdgeInsets.only(bottom: 20.0),
       child: TextFormField(
           decoration: InputDecoration(
             labelText: label,
@@ -42,7 +56,7 @@ class DateCustomFieldState extends State<DateCustomField> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        margin: EdgeInsets.only(bottom: 5.0),
+        margin: EdgeInsets.only(bottom: 20.0),
         child: InkWell(
           onTap: () => selectDate(context).then((e) {
                 if (e != null)
@@ -106,36 +120,34 @@ class DropdownCustomFieldState extends State<DropdownCustomField> {
 
   @override
   Widget build(BuildContext context) {
-    return new FormField(
+    return Container(
+      margin: EdgeInsets.only(bottom: 20),
+      child: FormField(
       builder: (FormFieldState state) {
-        return 
-            InputDecorator(
-              decoration: InputDecoration(
-                labelText: widget._label,
-                labelStyle: TextStyle()
-              ),
-              isEmpty: currOption == '',
-              child: new DropdownButtonHideUnderline(
-                child: new DropdownButton(
-                  value: currOption,
-                  isDense: true,
-                  onChanged: (String newValue) {
-                    setState(() {
-                      currOption = newValue;
-                      state.didChange(newValue);
-                    });
-                  },
-                  items: widget._options.map((String value) {
-                    return new DropdownMenuItem(
-                      value: value,
-                      child: new Text(value),
-                    );
-                  }).toList(),
-                ),
-              ),
-            )
-          ;
+        return InputDecorator(
+          decoration: InputDecoration(
+              labelText: widget._label, labelStyle: TextStyle()),
+          isEmpty: currOption == '',
+          child: new DropdownButtonHideUnderline(
+            child: new DropdownButton(
+              value: currOption,
+              isDense: true,
+              onChanged: (String newValue) {
+                setState(() {
+                  currOption = newValue;
+                  state.didChange(newValue);
+                });
+              },
+              items: widget._options.map((String value) {
+                return new DropdownMenuItem(
+                  value: value,
+                  child: new Text(value),
+                );
+              }).toList(),
+            ),
+          ),
+        );
       },
-    );
+    ));
   }
 }
