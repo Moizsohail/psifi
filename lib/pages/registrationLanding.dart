@@ -33,8 +33,9 @@ class RegistrationLandingState extends State<RegistrationLanding> {
   }
 
   Widget ongoingRegistration() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return Center(child: Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         Text("Text Obtained from the server"),
         RaisedButton(
@@ -52,6 +53,6 @@ class RegistrationLandingState extends State<RegistrationLanding> {
           },
         )
       ],
-    );
+    ),);
   }
 }

@@ -1,20 +1,25 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:image_picker/image_picker.dart';
 // This file contains widgets for use in the registration session.
 
-
 // create a dictionary that stores variables and then send it of to a file for resuming
-Widget imageField(String label,Function getImage){
-  return RaisedButton(
-    onPressed: ()async{
-      
-      var galleryFile = await ImagePicker.pickImage(source:ImageSource.gallery);
-    },
-    child: Text("Pick Image"),
-  );
+Widget heading(String label) {
+  return Container(
+      margin: EdgeInsets.only(bottom: 10.0, top: 15),
+      child: Text(
+        label,
+        style: TextStyle(fontSize: 15),
+      ));
 }
+
+Widget helpText(String label){
+  return Container(child: Text(label,style: TextStyle(fontSize: 8,color: Colors.black45),),);
+}
+
 
 Widget textField(String label, Function callback, TextInputType keyboardType) {
   return Container(
@@ -121,33 +126,33 @@ class DropdownCustomFieldState extends State<DropdownCustomField> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(bottom: 20),
-      child: FormField(
-      builder: (FormFieldState state) {
-        return InputDecorator(
-          decoration: InputDecoration(
-              labelText: widget._label, labelStyle: TextStyle()),
-          isEmpty: currOption == '',
-          child: new DropdownButtonHideUnderline(
-            child: new DropdownButton(
-              value: currOption,
-              isDense: true,
-              onChanged: (String newValue) {
-                setState(() {
-                  currOption = newValue;
-                  state.didChange(newValue);
-                });
-              },
-              items: widget._options.map((String value) {
-                return new DropdownMenuItem(
-                  value: value,
-                  child: new Text(value),
-                );
-              }).toList(),
-            ),
-          ),
-        );
-      },
-    ));
+        margin: EdgeInsets.only(bottom: 20),
+        child: FormField(
+          builder: (FormFieldState state) {
+            return InputDecorator(
+              decoration: InputDecoration(
+                  labelText: widget._label, labelStyle: TextStyle()),
+              isEmpty: currOption == '',
+              child: new DropdownButtonHideUnderline(
+                child: new DropdownButton(
+                  value: currOption,
+                  isDense: true,
+                  onChanged: (String newValue) {
+                    setState(() {
+                      currOption = newValue;
+                      state.didChange(newValue);
+                    });
+                  },
+                  items: widget._options.map((String value) {
+                    return new DropdownMenuItem(
+                      value: value,
+                      child: new Text(value),
+                    );
+                  }).toList(),
+                ),
+              ),
+            );
+          },
+        ));
   }
 }
