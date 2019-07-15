@@ -21,6 +21,7 @@ class RegistrationsSessionState extends State<RegistrationsSession> {
   final formKey = GlobalKey<FormState>();
   final List<Function> _pages = [];
   int pageNumber = 0;
+  int numberOfMember = 0;
   bool pagesLoaded = false;
   int pagesCap = 3;
   @override
@@ -28,10 +29,7 @@ class RegistrationsSessionState extends State<RegistrationsSession> {
     if (!pagesLoaded) {
       _pages.add(page1);
       _pages.add(page2);
-      var numberOfMember = 3;
-      for (int i = 0; i< numberOfMember; i++){
-        _pages.add(member);  
-      }
+
       pagesLoaded = true;
     }
 
@@ -66,21 +64,29 @@ class RegistrationsSessionState extends State<RegistrationsSession> {
             padding: EdgeInsets.only(left: 5.0, right: 5.0, top: 5.0),
             child: Form(
                 key: formKey,
-                child: ListView(
+                child: SingleChildScrollView(
+                    child: Column(
                   children: <Widget>[
                     Container(
                         margin: EdgeInsets.symmetric(vertical: 30.0),
                         child: Text("Team/School Information",
                             style: TextStyle(fontSize: 25))),
 
-                    DateCustomField("Date Of Birth"),
+                    // DateCustomField("Date Of Birth"),
                     DropdownCustomField('Are you applying through ______ ?',
-                        null, ['School', 'University', 'Privately']),
-                    DropdownCustomField('Team Members', '3', ['3', '4', '5']),
+                        null, ['School', 'University', 'Privately'], (val) {}),
+                    DropdownCustomField('Team Members', '3', ['3', '4', '5'],
+                        (val) {
+                      numberOfMember = int.parse(val);
+                      for (int i = 0; i < numberOfMember; i++) {
+                        _pages.add(member);
+                      }
+                    }),
                     DropdownCustomField(
                         'Will a Faculty Adviser accompany you to LUMS?',
                         'Y',
-                        ['Y', 'N']),
+                        ['Y', 'N'],
+                        (val) {}),
                     Text('Faculty Advisor Form: ## WILL BE ADDED LATER'),
                     textField("Institution Name", (value) {},
                         TextInputType.multiline),
@@ -99,7 +105,7 @@ class RegistrationsSessionState extends State<RegistrationsSession> {
                             .multiline), // break this into smaller sections like on cofnito
                     navButtons()
                   ],
-                ))));
+                )))));
   }
 
   Widget navButtons() {
@@ -123,13 +129,17 @@ class RegistrationsSessionState extends State<RegistrationsSession> {
           color: Theme.of(context).accentColor,
           child: Text(pageNumber < _pages.length - 1 ? "Next" : "Finish"),
           onPressed: () {
-            print(pageNumber);
-            if (pageNumber < _pages.length - 1)
-              setState(() {
-                pageNumber += 1;
-              });
-            else
-              print("finish");
+            FormState formState = formKey.currentState;
+            if (formState.validate()) {
+              formState.save();
+              if (pageNumber < _pages.length - 1)
+                setState(() {
+                  pageNumber += 1;
+                });
+              else
+                print("finish");
+            } else
+              print("hi");
           },
         ))
       ],
@@ -142,7 +152,9 @@ class RegistrationsSessionState extends State<RegistrationsSession> {
             padding: EdgeInsets.only(left: 5.0, right: 5.0, top: 5.0),
             child: Form(
                 key: formKey,
-                child: ListView(
+                child: SingleChildScrollView(
+                    child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: <Widget>[
                     Container(
                         margin: EdgeInsets.symmetric(vertical: 30.0),
@@ -161,8 +173,9 @@ class RegistrationsSessionState extends State<RegistrationsSession> {
                     textField("First Name", (value) {}, TextInputType.text),
                     textField("Last Name", (value) {}, TextInputType.text),
                     DateCustomField("Date Of Birth"),
-                    DropdownCustomField('Gender', null, ['M', 'F']),
-                    DropdownCustomField('Accomodation', null, ['Y', 'N']),
+                    DropdownCustomField('Gender', null, ['M', 'F'], (val) {}),
+                    DropdownCustomField(
+                        'Accomodation', null, ['Y', 'N'], (val) {}),
                     heading('Mobile Number'),
                     textField("Number", (value) {}, TextInputType.phone),
                     Container(
@@ -193,7 +206,7 @@ class RegistrationsSessionState extends State<RegistrationsSession> {
                         "Please download the waiver of liability form (for accommodation) from the website. Print and sign it and upload the picture of signed form here. Image should in jpeg or jpg with maximum allowed size of 500 KB."),
                     navButtons()
                   ],
-                ))));
+                )))));
   }
 
   Widget member(int memberNumber) {
@@ -202,7 +215,8 @@ class RegistrationsSessionState extends State<RegistrationsSession> {
             padding: EdgeInsets.only(left: 5.0, right: 5.0, top: 5.0),
             child: Form(
                 key: formKey,
-                child: ListView(
+                child: SingleChildScrollView(
+                    child: Column(
                   children: <Widget>[
                     Container(
                         margin: EdgeInsets.symmetric(vertical: 30.0),
@@ -221,8 +235,9 @@ class RegistrationsSessionState extends State<RegistrationsSession> {
                     textField("First Name", (value) {}, TextInputType.text),
                     textField("Last Name", (value) {}, TextInputType.text),
                     DateCustomField("Date Of Birth"),
-                    DropdownCustomField('Gender', null, ['M', 'F']),
-                    DropdownCustomField('Accommodation', null, ['Y', 'N']),
+                    DropdownCustomField('Gender', null, ['M', 'F'], (val) {}),
+                    DropdownCustomField(
+                        'Accommodation', null, ['Y', 'N'], (val) {}),
                     heading('Mobile Number'),
                     textField("Number", (value) {}, TextInputType.phone),
                     Container(
@@ -253,7 +268,7 @@ class RegistrationsSessionState extends State<RegistrationsSession> {
                         "Please download the waiver of liability form (for accommodation) from the website. Print and sign it and upload the picture of signed form here. Image should in jpeg or jpg with maximum allowed size of 500 KB."),
                     navButtons()
                   ],
-                ))));
+                )))));
   }
 
   Future<File> imageFile;

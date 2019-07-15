@@ -67,6 +67,7 @@ class EventsAdminState extends State<EventsAdmin>{
         if (value.isEmpty) {
           return 'Required';
         }
+        return null;
       },
       onSaved: onSaved,
     );

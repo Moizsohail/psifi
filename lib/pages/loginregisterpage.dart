@@ -131,7 +131,8 @@ class LoginRegisterPageState extends State<LoginRegisterPage> {
   }
 
   bool validateAndSave() {
-    final form = formKey.currentState;
+    final FormState form = formKey.currentState;
+    
     if (form.validate()) {
       form.save(); //save and return true on successful form validation
       return true;

@@ -63,6 +63,7 @@ class NotificationAdminState extends State<NotificationAdmin>{
         if (value.isEmpty) {
           return 'Required';
         }
+        return null;
       },
       onSaved: onSaved,
     );

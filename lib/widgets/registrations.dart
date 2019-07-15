@@ -6,6 +6,8 @@ import 'package:intl/intl.dart';
 import 'package:image_picker/image_picker.dart';
 // This file contains widgets for use in the registration session.
 
+// adding the
+
 // create a dictionary that stores variables and then send it of to a file for resuming
 Widget heading(String label) {
   return Container(
@@ -16,10 +18,14 @@ Widget heading(String label) {
       ));
 }
 
-Widget helpText(String label){
-  return Container(child: Text(label,style: TextStyle(fontSize: 8,color: Colors.black45),),);
+Widget helpText(String label) {
+  return Container(
+    child: Text(
+      label,
+      style: TextStyle(fontSize: 8, color: Colors.black45),
+    ),
+  );
 }
-
 
 Widget textField(String label, Function callback, TextInputType keyboardType) {
   return Container(
@@ -34,7 +40,7 @@ Widget textField(String label, Function callback, TextInputType keyboardType) {
           ),
           validator: (val) {
             if (val.length == 0) {
-              return "Email should not be empty.";
+              return "Required";
             } else {
               return null;
             }
@@ -64,11 +70,11 @@ class DateCustomFieldState extends State<DateCustomField> {
         margin: EdgeInsets.only(bottom: 20.0),
         child: InkWell(
           onTap: () => selectDate(context).then((e) {
-                if (e != null)
-                  setState(() {
-                    selectedDate = e;
-                  });
-              }),
+            if (e != null)
+              setState(() {
+                selectedDate = e;
+              });
+          }),
           child: new InputDecorator(
             decoration: new InputDecoration(
               labelText: widget._label,
@@ -95,11 +101,10 @@ class DateCustomFieldState extends State<DateCustomField> {
         firstDate: DateTime(1994),
         lastDate: DateTime(2010),
         builder: (BuildContext context, Widget child) {
-          return FittedBox(
-              child: Theme(
+          return Theme(
             data: ThemeData.dark(),
             child: child,
-          ));
+          );
         },
       );
 }
@@ -108,7 +113,9 @@ class DropdownCustomField extends StatefulWidget {
   final List<String> _options;
   final String _option;
   final String _label;
-  DropdownCustomField(this._label, this._option, this._options);
+  final Function _func;
+  DropdownCustomField(this._label, this._option, this._options, this._func);
+
   @override
   State<StatefulWidget> createState() {
     return DropdownCustomFieldState();
@@ -128,6 +135,13 @@ class DropdownCustomFieldState extends State<DropdownCustomField> {
     return Container(
         margin: EdgeInsets.only(bottom: 20),
         child: FormField(
+          onSaved: widget._func,
+          validator: (value) {
+            if (value == null) {
+              return "Required";
+            } else
+              return null;
+          },
           builder: (FormFieldState state) {
             return InputDecorator(
               decoration: InputDecoration(
