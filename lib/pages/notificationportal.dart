@@ -88,7 +88,7 @@ class NotificationPortalState extends State<NotificationPortal>{
           setState(() {});
         }
     });
-    print("before");
+    
     return ListTile(
       onTap: () { //tapping a notification opens up its (doc's) notification page
         Navigator.push(context, MaterialPageRoute(builder: (context) => NotificationPage(doc)));

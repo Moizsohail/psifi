@@ -75,12 +75,15 @@ class RegistrationsSessionState extends State<RegistrationsSession> {
                     // DateCustomField("Date Of Birth"),
                     DropdownCustomField('Are you applying through ______ ?',
                         null, ['School', 'University', 'Privately'], (val) {}),
-                    DropdownCustomField('Team Members', '3', ['3', '4', '5'],
+                    DropdownCustomField('Team Members', null, ['3', '4', '5'],
                         (val) {
                       numberOfMember = int.parse(val);
                       for (int i = 0; i < numberOfMember; i++) {
+                        print('hi'+i.toString());
                         _pages.add(member);
                       }
+                      _pages.add(eventPage);
+                      _pages.add(confirmationPage);
                     }),
                     DropdownCustomField(
                         'Will a Faculty Adviser accompany you to LUMS?',
@@ -130,7 +133,7 @@ class RegistrationsSessionState extends State<RegistrationsSession> {
           child: Text(pageNumber < _pages.length - 1 ? "Next" : "Finish"),
           onPressed: () {
             FormState formState = formKey.currentState;
-            if (formState.validate()) {
+            if (true) {
               formState.save();
               if (pageNumber < _pages.length - 1)
                 setState(() {
@@ -138,8 +141,8 @@ class RegistrationsSessionState extends State<RegistrationsSession> {
                 });
               else
                 print("finish");
-            } else
-              print("hi");
+            } else {}
+            //print("hi");
           },
         ))
       ],
@@ -217,6 +220,7 @@ class RegistrationsSessionState extends State<RegistrationsSession> {
                 key: formKey,
                 child: SingleChildScrollView(
                     child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: <Widget>[
                     Container(
                         margin: EdgeInsets.symmetric(vertical: 30.0),
@@ -269,6 +273,165 @@ class RegistrationsSessionState extends State<RegistrationsSession> {
                     navButtons()
                   ],
                 )))));
+  }
+
+  Widget eventPage(i) {
+    return Material(
+        child: Container(
+            padding: EdgeInsets.only(left: 5.0, right: 5.0, top: 5.0),
+            child: Form(
+                key: formKey,
+                child: SingleChildScrollView(
+                    child: Column(
+                  children: <Widget>[
+                    Container(
+                        margin: EdgeInsets.symmetric(vertical: 30.0),
+                        child:
+                            Text("Event Page", style: TextStyle(fontSize: 25))),
+                    DropdownCustomField(
+                        'Number of events', null, ['2', '3'], (val) {}),
+                    DropdownCustomField(
+                        'Event Pref #1',
+                        null,
+                        [
+                          'Rube Goldberg Machine',
+                          'Race To Infinity',
+                          'Gear Up',
+                          'Siege',
+                          'Science Crime Busters',
+                          'Diagnosis Dilemma',
+                          'Galactica',
+                          'Math Gauge',
+                          'Robowars',
+                          'Tour de Mind',
+                          'Tech Wars',
+                          'Geek Wars',
+                          'Zero Gravity'
+                        ],
+                        (val) {}),
+                    DropdownCustomField(
+                        'Event Pref #2',
+                        null,
+                        [
+                          'Rube Goldberg Machine',
+                          'Race To Infinity',
+                          'Gear Up',
+                          'Siege',
+                          'Science Crime Busters',
+                          'Diagnosis Dilemma',
+                          'Galactica',
+                          'Math Gauge',
+                          'Robowars',
+                          'Tour de Mind',
+                          'Tech Wars',
+                          'Geek Wars',
+                          'Zero Gravity'
+                        ],
+                        (val) {}),
+                    DropdownCustomField(
+                        'Event Pref #3',
+                        null,
+                        [
+                          'Rube Goldberg Machine',
+                          'Race To Infinity',
+                          'Gear Up',
+                          'Siege',
+                          'Science Crime Busters',
+                          'Diagnosis Dilemma',
+                          'Galactica',
+                          'Math Gauge',
+                          'Robowars',
+                          'Tour de Mind',
+                          'Tech Wars',
+                          'Geek Wars',
+                          'Zero Gravity'
+                        ],
+                        (val) {}),
+                    DropdownCustomField(
+                        'Event Pref #4',
+                        null,
+                        [
+                          'Rube Goldberg Machine',
+                          'Race To Infinity',
+                          'Gear Up',
+                          'Siege',
+                          'Science Crime Busters',
+                          'Diagnosis Dilemma',
+                          'Galactica',
+                          'Math Gauge',
+                          'Robowars',
+                          'Tour de Mind',
+                          'Tech Wars',
+                          'Geek Wars',
+                          'Zero Gravity'
+                        ],
+                        (val) {}),
+                    DropdownCustomField(
+                        'Event Pref #5',
+                        null,
+                        [
+                          'Rube Goldberg Machine',
+                          'Race To Infinity',
+                          'Gear Up',
+                          'Siege',
+                          'Science Crime Busters',
+                          'Diagnosis Dilemma',
+                          'Galactica',
+                          'Math Gauge',
+                          'Robowars',
+                          'Tour de Mind',
+                          'Tech Wars',
+                          'Geek Wars',
+                          'Zero Gravity'
+                        ],
+                        (val) {}),
+                    heading("Explain your choice of events"),
+                    textField("TextBox", (value) {}, TextInputType.multiline),
+                    DateCustomField("Date Of Birth"),
+                    DropdownCustomField('Gender', null, ['M', 'F'], (val) {}),
+                    DropdownCustomField(
+                        'Accommodation', null, ['Y', 'N'], (val) {}),
+                    heading('Mobile Number'),
+                    textField("Number", (value) {}, TextInputType.phone),
+                    Container(
+                        margin: EdgeInsets.only(bottom: 10.0, top: 15),
+                        child: Text(
+                          "Address",
+                          style: TextStyle(fontSize: 15),
+                        )),
+                    textField(
+                        "Address Line 1", (value) {}, TextInputType.multiline),
+                    textField("City", (value) {}, TextInputType.text),
+                    textField("Country", (value) {}, TextInputType.text),
+                    heading("CNIC/B-Form Number"),
+                    textField("Number", (value) {}, TextInputType.number),
+                    heading("Email Address"),
+                    textField("@", (value) {}, TextInputType.emailAddress),
+                    heading("Gaurdian"),
+                    textField("First Name", (value) {}, TextInputType.text),
+                    textField("Last Name", (value) {}, TextInputType.text),
+                    textField("Mobile Number", (value) {}, TextInputType.phone),
+                    heading("Waiver Of Liability"),
+                    imageField("Upload"),
+                    helpText(
+                        "Please download the waiver of liability form from the website. Print and sign it and upload the picture of signed form here. Image should in jpeg or jpg with maximum allowed size of 500 KB."),
+                    heading("Waiver Of Liability-Accommodation"),
+                    imageField("Upload"),
+                    helpText(
+                        "Please download the waiver of liability form (for accommodation) from the website. Print and sign it and upload the picture of signed form here. Image should in jpeg or jpg with maximum allowed size of 500 KB."),
+                    navButtons()
+                  ],
+                )))));
+  }
+
+  Widget confirmationPage(i) {
+    return Center(
+        child: Column(children: [
+      Text("""You have successfully submitted your application. 
+          Your team ID is included in the confirmation email sent to the email of the Head Delegate. 
+          We will let you know the next steps in your journey to attend Psifi X when Registration Phase 1 is over."""),
+      Text("Good Luck!")
+    ]));
   }
 
   Future<File> imageFile;

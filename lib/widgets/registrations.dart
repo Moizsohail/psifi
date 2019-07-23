@@ -6,9 +6,8 @@ import 'package:intl/intl.dart';
 import 'package:image_picker/image_picker.dart';
 // This file contains widgets for use in the registration session.
 
-// adding the
 
-// create a dictionary that stores variables and then send it of to a file for resuming
+// todo : create a dictionary that stores variables and then send it of to a file for resuming
 Widget heading(String label) {
   return Container(
       margin: EdgeInsets.only(bottom: 10.0, top: 15),
@@ -75,8 +74,8 @@ class DateCustomFieldState extends State<DateCustomField> {
                 selectedDate = e;
               });
           }),
-          child: new InputDecorator(
-            decoration: new InputDecoration(
+          child: InputDecorator(
+            decoration: InputDecoration(
               labelText: widget._label,
             ),
             child: new Row(
