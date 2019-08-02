@@ -12,7 +12,6 @@ import 'package:path_provider/path_provider.dart';
   or the csv should be created with elements from the 
 */
 class FormDataRecorder {
-  FormDataRecorder();
   Future<bool> isExist() async {
     final directory = await getApplicationDocumentsDirectory();
     final file = File('${directory.path}/backup00.txt');
@@ -20,24 +19,26 @@ class FormDataRecorder {
   }
 
   createNew() async {
-    List<dynamic> data = [
-      null,
-      null,
-    ];
+    Map<String,dynamic> data = {};
     await save(data);
   }
 
-  save(List<dynamic> data) async {
+  save(Map<String,dynamic> data) async {
     final directory = await getApplicationDocumentsDirectory();
     final file = File('${directory.path}/backup00.txt');
     String text = json.encode(data);
     await file.writeAsString(text);
   }
 
-  read() async {
+  Future<Map<String,dynamic>> read() async {
     final directory = await getApplicationDocumentsDirectory();
     final file = File('${directory.path}/backup00.txt');
+    if (! await file.exists()){
+      return null;
+    }
     String text = await file.readAsString();
-    print(text);
+    Map<String,dynamic> a = json.decode(text);
+    print(a);
+    return a;
   }
 }

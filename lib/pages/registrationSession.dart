@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/material.dart' as prefix0;
+import 'package:flutter/rendering.dart';
 import 'package:psifi/utils/thumbnail.dart';
 import 'package:psifi/widgets/Registrations.dart' as prefix1;
 import 'package:psifi/widgets/registrations.dart';
@@ -12,18 +13,42 @@ import 'dart:io';
 // create a class that takes in
 // field type to construt a widget
 //
+
+/* create a drictonary
+issues looks like a better option
+will need a key for every entry
+will store data into it
+will retrieve data on creation
+// create a list
+issues
+will require max to initialize
+
+*/
+Map<String, dynamic> data;
 class RegistrationsSession extends StatefulWidget {
+  final Map<String, dynamic> _data;
+  RegistrationsSession(this._data);
   @override
   State<StatefulWidget> createState() => RegistrationsSessionState();
 }
 
 class RegistrationsSessionState extends State<RegistrationsSession> {
-  final formKey = GlobalKey<FormState>();
+  List<GlobalKey<FormState>> formKey = [];
   final List<Function> _pages = [];
   int pageNumber = 0;
   int numberOfMember = 0;
   bool pagesLoaded = false;
   int pagesCap = 3;
+  @override
+  void initState() {
+    super.initState();
+    //List<String> allKeys = data.keys.toList();
+    data = widget._data;
+    for (int i = 0; i < 8; i++) {
+      formKey.add(GlobalKey<FormState>());
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     if (!pagesLoaded) {
@@ -59,11 +84,12 @@ class RegistrationsSessionState extends State<RegistrationsSession> {
   }
 
   Widget page1(i) {
+    print(data);
     return Material(
         child: Container(
             padding: EdgeInsets.only(left: 5.0, right: 5.0, top: 5.0),
             child: Form(
-                key: formKey,
+                key: formKey[i],
                 child: SingleChildScrollView(
                     child: Column(
                   children: <Widget>[
@@ -73,45 +99,70 @@ class RegistrationsSessionState extends State<RegistrationsSession> {
                             style: TextStyle(fontSize: 25))),
 
                     // DateCustomField("Date Of Birth"),
-                    DropdownCustomField('Are you applying through ______ ?',
-                        null, ['School', 'University', 'Privately'], (val) {}),
-                    DropdownCustomField('Team Members', null, ['3', '4', '5'],
-                        (val) {
-                      numberOfMember = int.parse(val);
-                      for (int i = 0; i < numberOfMember; i++) {
-                        print('hi'+i.toString());
-                        _pages.add(member);
+                    DropdownCustomField(
+                        'Are you applying through ______ ?',
+                        data['applyingthrough'],
+                        ['School', 'University', 'Privately'], (val) {
+                      data['applyingthrough'] = val;
+                    }),
+                    DropdownCustomField(
+                        'Team Members',
+                        data['numberofmembers'],
+                        ['3', '4', '5'], (val) {
+                      data['numberofmembers'] = val;
+                      numberOfMember = int.parse(val) -
+                          1; // -1 because head delegate is double counted otherwise
+                      const int unitializedPageStack = 2;
+                      int recommendedPageStack = 2 + numberOfMember + 2;
+                      if (unitializedPageStack != _pages.length &&
+                          recommendedPageStack != _pages.length) {
+                        for (int i = 0; i < numberOfMember + 2; i++) {
+                          _pages.removeLast();
+                        }
                       }
-                      _pages.add(eventPage);
-                      _pages.add(confirmationPage);
+                      if (unitializedPageStack == _pages.length) {
+                        for (int i = 0; i < numberOfMember; i++) {
+                          _pages.add(member);
+                        }
+                        _pages.add(eventPage);
+                        _pages.add(confirmationPage);
+                      }
                     }),
                     DropdownCustomField(
                         'Will a Faculty Adviser accompany you to LUMS?',
-                        'Y',
-                        ['Y', 'N'],
-                        (val) {}),
+                        data['faculty'],
+                        ['Y', 'N'], (val) {
+                      data['faculty'] = val;
+                    }),
                     Text('Faculty Advisor Form: ## WILL BE ADDED LATER'),
-                    textField("Institution Name", (value) {},
-                        TextInputType.multiline),
-                    textField("Institution City", (value) {},
-                        TextInputType.multiline),
-                    textField("Institution Email", (value) {},
+                    textField("Institution Name", (value) {
+                      data['institname'] = value;
+                    }, data['institname'], TextInputType.multiline),
+                    textField("Institution City", (value) {
+                      data['institcity'] = value;
+                    }, data['institcity'], TextInputType.multiline),
+                    textField("Institution Email", (value) {
+                      data['institemail'] = value;
+                    }, data['institemail'], TextInputType.emailAddress),
+                    textField("Principal Email Address", (value) {
+                      data['principalemail'] = value;
+                    }, data['principalemail'],
                         TextInputType.emailAddress),
-                    textField("Principal Email Address", (value) {},
-                        TextInputType.emailAddress),
-                    textField("Institution Phone Number", (value) {},
-                        TextInputType.phone),
-                    textField(
-                        "Complete Address Of Institution",
-                        (value) {},
+                    textField("Institution Phone Number", (value) {
+                      data['institphonenumber'] = value;
+                    }, data['institphonenumber'], TextInputType.phone),
+                    textField("Complete Address Of Institution", (value) {
+                      data['addrofinstit'] = value;
+                    },
+                        data['addrofinstit'],
                         TextInputType
                             .multiline), // break this into smaller sections like on cofnito
-                    navButtons()
+                    navButtons(i)
                   ],
                 )))));
   }
 
-  Widget navButtons() {
+  Widget navButtons(i) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       mainAxisSize: MainAxisSize.max,
@@ -132,9 +183,12 @@ class RegistrationsSessionState extends State<RegistrationsSession> {
           color: Theme.of(context).accentColor,
           child: Text(pageNumber < _pages.length - 1 ? "Next" : "Finish"),
           onPressed: () {
-            FormState formState = formKey.currentState;
-            if (true) {
+            FormState formState = formKey[i].currentState;
+            
+            
+            if (formState.validate()) {
               formState.save();
+              print(data);
               if (pageNumber < _pages.length - 1)
                 setState(() {
                   pageNumber += 1;
@@ -154,7 +208,7 @@ class RegistrationsSessionState extends State<RegistrationsSession> {
         child: Container(
             padding: EdgeInsets.only(left: 5.0, right: 5.0, top: 5.0),
             child: Form(
-                key: formKey,
+                key: formKey[i],
                 child: SingleChildScrollView(
                     child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -173,32 +227,55 @@ class RegistrationsSessionState extends State<RegistrationsSession> {
                           "Name",
                           style: TextStyle(fontSize: 15),
                         )),
-                    textField("First Name", (value) {}, TextInputType.text),
-                    textField("Last Name", (value) {}, TextInputType.text),
-                    DateCustomField("Date Of Birth"),
-                    DropdownCustomField('Gender', null, ['M', 'F'], (val) {}),
-                    DropdownCustomField(
-                        'Accomodation', null, ['Y', 'N'], (val) {}),
+                    textField(
+                        "First Name", (value) {}, null, TextInputType.text),
+                    textField(
+                        "Last Name", (value) {}, null, TextInputType.text),
+                    DateCustomField("Date Of Birth", data['dob1'],
+                        (val) {
+                      data['dob1'] = val;
+                    }),
+                    DropdownCustomField('Gender', data['gender1'],
+                        ['M', 'F'], (val) {}),
+                    DropdownCustomField('Accomodation', data['accom1'],
+                        ['Y', 'N'], (val) {}),
                     heading('Mobile Number'),
-                    textField("Number", (value) {}, TextInputType.phone),
+                    textField("Number", (value) {
+                      data['nm1'] = value;
+                    }, data['nm1'], TextInputType.phone),
                     Container(
                         margin: EdgeInsets.only(bottom: 10.0, top: 15),
                         child: Text(
                           "Address",
                           style: TextStyle(fontSize: 15),
                         )),
-                    textField(
-                        "Address Line 1", (value) {}, TextInputType.multiline),
-                    textField("City", (value) {}, TextInputType.text),
-                    textField("Country", (value) {}, TextInputType.text),
+                    textField("Address Line 1", (value) {
+                      data['addrln1'] = value;
+                    }, data['addrln1'], TextInputType.multiline),
+                    textField("City", (value) {
+                      data['city1'] = value;
+                    }, data['city1'], TextInputType.text),
+                    textField("Country", (value) {
+                      data['country1'] = value;
+                    }, data['country1'], TextInputType.text),
                     heading("CNIC/B-Form Number"),
-                    textField("Number", (value) {}, TextInputType.number),
+                    textField("Number", (value) {
+                      data['cnic1'] = value;
+                    }, data['cnic1'], TextInputType.number),
                     heading("Email Address"),
-                    textField("@", (value) {}, TextInputType.emailAddress),
+                    textField("@", (value) {
+                      data['emailaddr1'] = value;
+                    }, data['emailaddr1'], TextInputType.emailAddress),
                     heading("Gaurdian"),
-                    textField("First Name", (value) {}, TextInputType.text),
-                    textField("Last Name", (value) {}, TextInputType.text),
-                    textField("Mobile Number", (value) {}, TextInputType.phone),
+                    textField("First Name", (value) {
+                      data['gaurdianfn1'] = value;
+                    }, data['gaurdianfn1'], TextInputType.text),
+                    textField("Last Name", (value) {
+                      data['gaudrianln1'] = value;
+                    }, data['gaurdianln1'], TextInputType.text),
+                    textField("Mobile Number", (value) {
+                      data['gaudrainnm1'] = value;
+                    }, data['gaudrainnm1'], TextInputType.phone),
                     heading("Waiver Of Liability"),
                     imageField("Upload"),
                     helpText(
@@ -207,7 +284,7 @@ class RegistrationsSessionState extends State<RegistrationsSession> {
                     imageField("Upload"),
                     helpText(
                         "Please download the waiver of liability form (for accommodation) from the website. Print and sign it and upload the picture of signed form here. Image should in jpeg or jpg with maximum allowed size of 500 KB."),
-                    navButtons()
+                    navButtons(i)
                   ],
                 )))));
   }
@@ -217,7 +294,7 @@ class RegistrationsSessionState extends State<RegistrationsSession> {
         child: Container(
             padding: EdgeInsets.only(left: 5.0, right: 5.0, top: 5.0),
             child: Form(
-                key: formKey,
+                key: formKey[memberNumber],
                 child: SingleChildScrollView(
                     child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -236,32 +313,74 @@ class RegistrationsSessionState extends State<RegistrationsSession> {
                           "Name",
                           style: TextStyle(fontSize: 15),
                         )),
-                    textField("First Name", (value) {}, TextInputType.text),
-                    textField("Last Name", (value) {}, TextInputType.text),
-                    DateCustomField("Date Of Birth"),
-                    DropdownCustomField('Gender', null, ['M', 'F'], (val) {}),
+                    textField(
+                        "First Name", (value) {}, null, TextInputType.text),
+                    textField(
+                        "Last Name", (value) {}, null, TextInputType.text),
+                    DateCustomField("Date Of Birth",
+                        data['dob' + numberOfMember.toString()], (val) {
+                      data['dob' + numberOfMember.toString()] = val;
+                    }),
                     DropdownCustomField(
-                        'Accommodation', null, ['Y', 'N'], (val) {}),
+                        'Gender',
+                        data['gender' + numberOfMember.toString()],
+                        ['M', 'F'],
+                        (val) {}),
+                    DropdownCustomField(
+                        'Accommodation',
+                        data['dob' + numberOfMember.toString()],
+                        ['Y', 'N'],
+                        (val) {}),
                     heading('Mobile Number'),
-                    textField("Number", (value) {}, TextInputType.phone),
+                    textField("Number", (value) {
+                      data['nm' + numberOfMember.toString()] = value;
+                    }, data['nm' + numberOfMember.toString()],
+                        TextInputType.phone),
                     Container(
                         margin: EdgeInsets.only(bottom: 10.0, top: 15),
                         child: Text(
                           "Address",
                           style: TextStyle(fontSize: 15),
                         )),
-                    textField(
-                        "Address Line 1", (value) {}, TextInputType.multiline),
-                    textField("City", (value) {}, TextInputType.text),
-                    textField("Country", (value) {}, TextInputType.text),
+                    textField("Address Line 1", (value) {
+                      data['addrln' + numberOfMember.toString()] =
+                          value;
+                    }, data['addrln' + numberOfMember.toString()],
+                        TextInputType.multiline),
+                    textField("City", (value) {
+                      data['city' + numberOfMember.toString()] = value;
+                    }, data['city' + numberOfMember.toString()],
+                        TextInputType.text),
+                    textField("Country", (value) {
+                      data['country' + numberOfMember.toString()] =
+                          value;
+                    }, data['country' + numberOfMember.toString()],
+                        TextInputType.text),
                     heading("CNIC/B-Form Number"),
-                    textField("Number", (value) {}, TextInputType.number),
+                    textField("Number", (value) {
+                      data['cnicnumber' + numberOfMember.toString()] =
+                          value;
+                    }, data['cnicnumber' + numberOfMember.toString()],
+                        TextInputType.number),
                     heading("Email Address"),
-                    textField("@", (value) {}, TextInputType.emailAddress),
+                    textField("@", (value) {
+                      data['emailaddress' + numberOfMember.toString()] =
+                          value;
+                    }, data['emailaddress' + numberOfMember.toString()],
+                        TextInputType.emailAddress),
                     heading("Gaurdian"),
-                    textField("First Name", (value) {}, TextInputType.text),
-                    textField("Last Name", (value) {}, TextInputType.text),
-                    textField("Mobile Number", (value) {}, TextInputType.phone),
+                    textField("First Name", (value) {
+                      data['fn' + numberOfMember.toString()] = value;
+                    }, data['fn' + numberOfMember.toString()],
+                        TextInputType.text),
+                    textField("Last Name", (value) {
+                      data['ln' + numberOfMember.toString()] = value;
+                    }, data['ln' + numberOfMember.toString()],
+                        TextInputType.text),
+                    textField("Mobile Number", (value) {
+                      data['mn' + numberOfMember.toString()] = value;
+                    }, data['mn' + numberOfMember.toString()],
+                        TextInputType.phone),
                     heading("Waiver Of Liability"),
                     imageField("Upload"),
                     helpText(
@@ -270,7 +389,7 @@ class RegistrationsSessionState extends State<RegistrationsSession> {
                     imageField("Upload"),
                     helpText(
                         "Please download the waiver of liability form (for accommodation) from the website. Print and sign it and upload the picture of signed form here. Image should in jpeg or jpg with maximum allowed size of 500 KB."),
-                    navButtons()
+                    navButtons(numberOfMember)
                   ],
                 )))));
   }
@@ -280,7 +399,7 @@ class RegistrationsSessionState extends State<RegistrationsSession> {
         child: Container(
             padding: EdgeInsets.only(left: 5.0, right: 5.0, top: 5.0),
             child: Form(
-                key: formKey,
+                key: formKey[i],
                 child: SingleChildScrollView(
                     child: Column(
                   children: <Widget>[
@@ -289,128 +408,142 @@ class RegistrationsSessionState extends State<RegistrationsSession> {
                         child:
                             Text("Event Page", style: TextStyle(fontSize: 25))),
                     DropdownCustomField(
-                        'Number of events', null, ['2', '3'], (val) {}),
-                    DropdownCustomField(
-                        'Event Pref #1',
-                        null,
-                        [
-                          'Rube Goldberg Machine',
-                          'Race To Infinity',
-                          'Gear Up',
-                          'Siege',
-                          'Science Crime Busters',
-                          'Diagnosis Dilemma',
-                          'Galactica',
-                          'Math Gauge',
-                          'Robowars',
-                          'Tour de Mind',
-                          'Tech Wars',
-                          'Geek Wars',
-                          'Zero Gravity'
-                        ],
-                        (val) {}),
-                    DropdownCustomField(
-                        'Event Pref #2',
-                        null,
-                        [
-                          'Rube Goldberg Machine',
-                          'Race To Infinity',
-                          'Gear Up',
-                          'Siege',
-                          'Science Crime Busters',
-                          'Diagnosis Dilemma',
-                          'Galactica',
-                          'Math Gauge',
-                          'Robowars',
-                          'Tour de Mind',
-                          'Tech Wars',
-                          'Geek Wars',
-                          'Zero Gravity'
-                        ],
-                        (val) {}),
-                    DropdownCustomField(
-                        'Event Pref #3',
-                        null,
-                        [
-                          'Rube Goldberg Machine',
-                          'Race To Infinity',
-                          'Gear Up',
-                          'Siege',
-                          'Science Crime Busters',
-                          'Diagnosis Dilemma',
-                          'Galactica',
-                          'Math Gauge',
-                          'Robowars',
-                          'Tour de Mind',
-                          'Tech Wars',
-                          'Geek Wars',
-                          'Zero Gravity'
-                        ],
-                        (val) {}),
-                    DropdownCustomField(
-                        'Event Pref #4',
-                        null,
-                        [
-                          'Rube Goldberg Machine',
-                          'Race To Infinity',
-                          'Gear Up',
-                          'Siege',
-                          'Science Crime Busters',
-                          'Diagnosis Dilemma',
-                          'Galactica',
-                          'Math Gauge',
-                          'Robowars',
-                          'Tour de Mind',
-                          'Tech Wars',
-                          'Geek Wars',
-                          'Zero Gravity'
-                        ],
-                        (val) {}),
-                    DropdownCustomField(
-                        'Event Pref #5',
-                        null,
-                        [
-                          'Rube Goldberg Machine',
-                          'Race To Infinity',
-                          'Gear Up',
-                          'Siege',
-                          'Science Crime Busters',
-                          'Diagnosis Dilemma',
-                          'Galactica',
-                          'Math Gauge',
-                          'Robowars',
-                          'Tour de Mind',
-                          'Tech Wars',
-                          'Geek Wars',
-                          'Zero Gravity'
-                        ],
-                        (val) {}),
+                        'Number of events', data['noe'], ['2', '3'],
+                        (val) {
+                      data['noe'] = val;
+                    }),
+                    DropdownCustomField('Event Pref #1', data['e1'], [
+                      'Rube Goldberg Machine',
+                      'Race To Infinity',
+                      'Gear Up',
+                      'Siege',
+                      'Science Crime Busters',
+                      'Diagnosis Dilemma',
+                      'Galactica',
+                      'Math Gauge',
+                      'Robowars',
+                      'Tour de Mind',
+                      'Tech Wars',
+                      'Geek Wars',
+                      'Zero Gravity'
+                    ], (val) {
+                      data['e1'] = val;
+                    }),
+                    DropdownCustomField('Event Pref #2', data['e2'], [
+                      'Rube Goldberg Machine',
+                      'Race To Infinity',
+                      'Gear Up',
+                      'Siege',
+                      'Science Crime Busters',
+                      'Diagnosis Dilemma',
+                      'Galactica',
+                      'Math Gauge',
+                      'Robowars',
+                      'Tour de Mind',
+                      'Tech Wars',
+                      'Geek Wars',
+                      'Zero Gravity'
+                    ], (val) {
+                      data['e2'] = val;
+                    }),
+                    DropdownCustomField('Event Pref #3', data['e3'], [
+                      'Rube Goldberg Machine',
+                      'Race To Infinity',
+                      'Gear Up',
+                      'Siege',
+                      'Science Crime Busters',
+                      'Diagnosis Dilemma',
+                      'Galactica',
+                      'Math Gauge',
+                      'Robowars',
+                      'Tour de Mind',
+                      'Tech Wars',
+                      'Geek Wars',
+                      'Zero Gravity'
+                    ], (val) {
+                      data['e3'] = val;
+                    }),
+                    DropdownCustomField('Event Pref #4', data['e4'], [
+                      'Rube Goldberg Machine',
+                      'Race To Infinity',
+                      'Gear Up',
+                      'Siege',
+                      'Science Crime Busters',
+                      'Diagnosis Dilemma',
+                      'Galactica',
+                      'Math Gauge',
+                      'Robowars',
+                      'Tour de Mind',
+                      'Tech Wars',
+                      'Geek Wars',
+                      'Zero Gravity'
+                    ], (val) {
+                      data['e4'] = val;
+                    }),
+                    DropdownCustomField('Event Pref #5', data['e5'], [
+                      'Rube Goldberg Machine',
+                      'Race To Infinity',
+                      'Gear Up',
+                      'Siege',
+                      'Science Crime Busters',
+                      'Diagnosis Dilemma',
+                      'Galactica',
+                      'Math Gauge',
+                      'Robowars',
+                      'Tour de Mind',
+                      'Tech Wars',
+                      'Geek Wars',
+                      'Zero Gravity'
+                    ], (val) {
+                      data['e5'] = val;
+                    }),
                     heading("Explain your choice of events"),
-                    textField("TextBox", (value) {}, TextInputType.multiline),
-                    DateCustomField("Date Of Birth"),
-                    DropdownCustomField('Gender', null, ['M', 'F'], (val) {}),
-                    DropdownCustomField(
-                        'Accommodation', null, ['Y', 'N'], (val) {}),
+                    textField("TextBox", (value) {
+                      data['explaine'] = value;
+                    }, data['explaine'], TextInputType.multiline),
+                    DateCustomField("Date Of Birth", data['dob0'],
+                        (val) {
+                      data['dob0'] = val;
+                    }),
+                    DropdownCustomField('Gender', data['gendere'],
+                        ['M', 'F'], (val) {}),
+                    DropdownCustomField('Accommodation', data['accome'],
+                        ['Y', 'N'], (val) {}),
                     heading('Mobile Number'),
-                    textField("Number", (value) {}, TextInputType.phone),
+                    textField("Number", (value) {
+                      data['nme'] = value;
+                    }, data['nme'], TextInputType.phone),
                     Container(
                         margin: EdgeInsets.only(bottom: 10.0, top: 15),
                         child: Text(
                           "Address",
                           style: TextStyle(fontSize: 15),
                         )),
-                    textField(
-                        "Address Line 1", (value) {}, TextInputType.multiline),
-                    textField("City", (value) {}, TextInputType.text),
-                    textField("Country", (value) {}, TextInputType.text),
+                    textField("Address Line 1", (value) {
+                      data['adlne'] = value;
+                    }, data['adlne'], TextInputType.multiline),
+                    textField("City", (value) {
+                      data['citye'] = value;
+                    }, data['citye'], TextInputType.text),
+                    textField("Country", (value) {
+                      data['countrye'] = value;
+                    }, data['countrye'], TextInputType.text),
                     heading("CNIC/B-Form Number"),
-                    textField("Number", (value) {}, TextInputType.number),
+                    textField("Number", (value) {
+                      data['cnice'] = value;
+                    }, data['cnice'], TextInputType.number),
                     heading("Email Address"),
-                    textField("@", (value) {}, TextInputType.emailAddress),
+                    textField("@", (value) {
+                      data['emailaddre'] = value;
+                    }, data['emailaddre'], TextInputType.emailAddress),
                     heading("Gaurdian"),
-                    textField("First Name", (value) {}, TextInputType.text),
-                    textField("Last Name", (value) {}, TextInputType.text),
-                    textField("Mobile Number", (value) {}, TextInputType.phone),
+                    textField("First Name", (value) {
+                      data['gaurdiane'] = value;
+                    }, data['gaurdiane'], TextInputType.text),
+                    textField(
+                        "Last Name", (value) {}, null, TextInputType.text),
+                    textField(
+                        "Mobile Number", (value) {}, null, TextInputType.phone),
                     heading("Waiver Of Liability"),
                     imageField("Upload"),
                     helpText(
@@ -419,7 +552,7 @@ class RegistrationsSessionState extends State<RegistrationsSession> {
                     imageField("Upload"),
                     helpText(
                         "Please download the waiver of liability form (for accommodation) from the website. Print and sign it and upload the picture of signed form here. Image should in jpeg or jpg with maximum allowed size of 500 KB."),
-                    navButtons()
+                    navButtons(i)
                   ],
                 )))));
   }

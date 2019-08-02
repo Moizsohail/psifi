@@ -1,11 +1,8 @@
-import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:image_picker/image_picker.dart';
 // This file contains widgets for use in the registration session.
-
 
 // todo : create a dictionary that stores variables and then send it of to a file for resuming
 Widget heading(String label) {
@@ -26,10 +23,11 @@ Widget helpText(String label) {
   );
 }
 
-Widget textField(String label, Function callback, TextInputType keyboardType) {
+Widget textField(String label, Function callback,String initial, TextInputType keyboardType) {
   return Container(
       margin: EdgeInsets.only(bottom: 20.0),
       child: TextFormField(
+          initialValue: initial,
           decoration: InputDecoration(
             labelText: label,
             fillColor: Colors.white,
@@ -53,7 +51,9 @@ Widget textField(String label, Function callback, TextInputType keyboardType) {
 
 class DateCustomField extends StatefulWidget {
   final String _label;
-  DateCustomField(this._label);
+  final String _initial;
+  final Function _callback;
+  DateCustomField(this._label,this._initial,this._callback);
   @override
   State<StatefulWidget> createState() {
     return DateCustomFieldState();
@@ -61,8 +61,13 @@ class DateCustomField extends StatefulWidget {
 }
 
 class DateCustomFieldState extends State<DateCustomField> {
-  DateTime selectedDate = DateTime(1997);
+  DateTime selectedDate;
   var formatter = new DateFormat('dd/MM/yyyy');
+  @override
+  void initState() {
+    super.initState();
+    selectedDate = (widget._initial == null)?DateTime(1997):widget._initial;
+  }
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -71,6 +76,7 @@ class DateCustomFieldState extends State<DateCustomField> {
           onTap: () => selectDate(context).then((e) {
             if (e != null)
               setState(() {
+                widget._callback(e);
                 selectedDate = e;
               });
           }),
@@ -127,16 +133,20 @@ class DropdownCustomFieldState extends State<DropdownCustomField> {
   void initState() {
     super.initState();
     currOption = widget._option;
+    print(currOption);
   }
 
   @override
   Widget build(BuildContext context) {
+    bool isError = false;
     return Container(
         margin: EdgeInsets.only(bottom: 20),
         child: FormField(
           onSaved: widget._func,
+          initialValue: currOption,
           validator: (value) {
             if (value == null) {
+              isError = true;
               return "Required";
             } else
               return null;
@@ -144,7 +154,9 @@ class DropdownCustomFieldState extends State<DropdownCustomField> {
           builder: (FormFieldState state) {
             return InputDecorator(
               decoration: InputDecoration(
-                  labelText: widget._label, labelStyle: TextStyle()),
+                  errorText: (isError)?"This cannot be empty":null,
+                  labelText: widget._label,
+                  labelStyle: TextStyle()),
               isEmpty: currOption == '',
               child: new DropdownButtonHideUnderline(
                 child: new DropdownButton(
