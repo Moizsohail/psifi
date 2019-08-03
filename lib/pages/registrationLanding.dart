@@ -16,12 +16,23 @@ enum RegistrationState {
 
 class RegistrationLandingState extends State<RegistrationLanding> {
   FormDataRecorder formdatarecorder;
+  bool showLoading;
+  bool showResumeButton;
   RegistrationState _registrationState =
       RegistrationState.ongoing_registration_new;
   @override
   void initState() {
     super.initState();
+    showResumeButton = false;
     formdatarecorder = FormDataRecorder();
+    formdatarecorder.isExist().then((isExist){
+      if (isExist)
+        setState((){
+          showResumeButton = true;
+        });
+    }
+    );
+    showLoading = false;
   }
 
   @override
@@ -32,15 +43,14 @@ class RegistrationLandingState extends State<RegistrationLanding> {
             : ongoingRegistration());
   }
 
-  Widget closedRegistration() {
-    return Column(
-      children: <Widget>[
-        Text("Sorry The Registartion Has Ended"),
-      ],
-    );
-  }
+  Widget closedRegistration() => Column(
+        children: <Widget>[
+          Text("Sorry The Registartion Has Ended"),
+        ],
+      );
 
   Widget ongoingRegistration() {
+    
     return Center(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -50,18 +60,25 @@ class RegistrationLandingState extends State<RegistrationLanding> {
           RaisedButton(
             onPressed: (_registrationState ==
                     RegistrationState.ongoing_registration_new)
-                ? null
-                : () async {
-                    Map<String, dynamic> result = await formdatarecorder.read();
-                    if (result != null)
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  RegistrationsSession(result)));
-                  },
+                ? () {
+                    setState(() {
+                     showLoading = true; 
+                    });
+                    formdatarecorder.read().then((result) {
+                      setState(() {
+                       showLoading = false; 
+                      });
+                      if (result != null)
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    RegistrationsSession(result)));
+                    });
+                  }
+                : null,
             color: Theme.of(context).accentColor,
-            child: Text(
+            child: (showLoading)?CircularProgressIndicator():Text(
               "Resume",
               style: TextStyle(color: Theme.of(context).primaryColor),
             ),
@@ -69,10 +86,11 @@ class RegistrationLandingState extends State<RegistrationLanding> {
           FlatButton(
             child: Text("New"),
             onPressed: () {
+              formdatarecorder.createNew();
               Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => RegistrationsSession({'a':'a'})));
+                      builder: (context) => RegistrationsSession({'a': 'a'})));
             },
           )
         ],

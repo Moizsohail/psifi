@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/material.dart' as prefix0;
 import 'package:flutter/rendering.dart';
+import 'package:psifi/utils/formDataRecorder.dart';
 import 'package:psifi/utils/thumbnail.dart';
-import 'package:psifi/widgets/Registrations.dart' as prefix1;
 import 'package:psifi/widgets/registrations.dart';
-import 'package:page_view_indicator/page_view_indicator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
@@ -25,6 +24,7 @@ will require max to initialize
 
 */
 Map<String, dynamic> data;
+
 class RegistrationsSession extends StatefulWidget {
   final Map<String, dynamic> _data;
   RegistrationsSession(this._data);
@@ -35,6 +35,7 @@ class RegistrationsSession extends StatefulWidget {
 class RegistrationsSessionState extends State<RegistrationsSession> {
   List<GlobalKey<FormState>> formKey = [];
   final List<Function> _pages = [];
+  FormDataRecorder _formDataRecorder;
   int pageNumber = 0;
   int numberOfMember = 0;
   bool pagesLoaded = false;
@@ -43,6 +44,7 @@ class RegistrationsSessionState extends State<RegistrationsSession> {
   void initState() {
     super.initState();
     //List<String> allKeys = data.keys.toList();
+    _formDataRecorder = FormDataRecorder();
     data = widget._data;
     for (int i = 0; i < 8; i++) {
       formKey.add(GlobalKey<FormState>());
@@ -105,9 +107,7 @@ class RegistrationsSessionState extends State<RegistrationsSession> {
                         ['School', 'University', 'Privately'], (val) {
                       data['applyingthrough'] = val;
                     }),
-                    DropdownCustomField(
-                        'Team Members',
-                        data['numberofmembers'],
+                    DropdownCustomField('Team Members', data['numberofmembers'],
                         ['3', '4', '5'], (val) {
                       data['numberofmembers'] = val;
                       numberOfMember = int.parse(val) -
@@ -146,8 +146,7 @@ class RegistrationsSessionState extends State<RegistrationsSession> {
                     }, data['institemail'], TextInputType.emailAddress),
                     textField("Principal Email Address", (value) {
                       data['principalemail'] = value;
-                    }, data['principalemail'],
-                        TextInputType.emailAddress),
+                    }, data['principalemail'], TextInputType.emailAddress),
                     textField("Institution Phone Number", (value) {
                       data['institphonenumber'] = value;
                     }, data['institphonenumber'], TextInputType.phone),
@@ -184,11 +183,9 @@ class RegistrationsSessionState extends State<RegistrationsSession> {
           child: Text(pageNumber < _pages.length - 1 ? "Next" : "Finish"),
           onPressed: () {
             FormState formState = formKey[i].currentState;
-            
-            
             if (formState.validate()) {
               formState.save();
-              print(data);
+              _formDataRecorder.save(data);
               if (pageNumber < _pages.length - 1)
                 setState(() {
                   pageNumber += 1;
@@ -227,18 +224,24 @@ class RegistrationsSessionState extends State<RegistrationsSession> {
                           "Name",
                           style: TextStyle(fontSize: 15),
                         )),
-                    textField(
-                        "First Name", (value) {}, null, TextInputType.text),
-                    textField(
-                        "Last Name", (value) {}, null, TextInputType.text),
+                    textField("First Name", (value) {
+                      data['fn1'] = value;
+                    }, data['fn1'], TextInputType.text),
+                    textField("Last Name", (value) {
+                      data['ln1'] = value;
+                    }, data['ln1'], TextInputType.text),
                     DateCustomField("Date Of Birth", data['dob1'],
-                        (val) {
-                      data['dob1'] = val;
+                        (DateTime val) {
+                      data['dob1'] = val.toIso8601String();
                     }),
-                    DropdownCustomField('Gender', data['gender1'],
-                        ['M', 'F'], (val) {}),
-                    DropdownCustomField('Accomodation', data['accom1'],
-                        ['Y', 'N'], (val) {}),
+                    DropdownCustomField('Gender', data['gender1'], ['M', 'F'],
+                        (val) {
+                      data['gender1'] = val;
+                    }),
+                    DropdownCustomField(
+                        'Accomodation', data['accom1'], ['Y', 'N'], (val) {
+                      data['accom1'] = val;
+                    }),
                     heading('Mobile Number'),
                     textField("Number", (value) {
                       data['nm1'] = value;
@@ -271,8 +274,8 @@ class RegistrationsSessionState extends State<RegistrationsSession> {
                       data['gaurdianfn1'] = value;
                     }, data['gaurdianfn1'], TextInputType.text),
                     textField("Last Name", (value) {
-                      data['gaudrianln1'] = value;
-                    }, data['gaurdianln1'], TextInputType.text),
+                      data['gaudrianlna1'] = value;
+                    }, data['gaudrianlna1'], TextInputType.text),
                     textField("Mobile Number", (value) {
                       data['gaudrainnm1'] = value;
                     }, data['gaudrainnm1'], TextInputType.phone),
@@ -290,6 +293,7 @@ class RegistrationsSessionState extends State<RegistrationsSession> {
   }
 
   Widget member(int memberNumber) {
+    print('gendera' + memberNumber.toString());
     return Material(
         child: Container(
             padding: EdgeInsets.only(left: 5.0, right: 5.0, top: 5.0),
@@ -314,27 +318,29 @@ class RegistrationsSessionState extends State<RegistrationsSession> {
                           style: TextStyle(fontSize: 15),
                         )),
                     textField(
-                        "First Name", (value) {}, null, TextInputType.text),
+                        "First Name", (value) {data['fnm' + memberNumber.toString()]=value;}, data['fnm' + memberNumber.toString()], TextInputType.text),
                     textField(
-                        "Last Name", (value) {}, null, TextInputType.text),
+                        "Last Name", (value) {data['lnm' + memberNumber.toString()]=value;}, data['lnm' + memberNumber.toString()], TextInputType.text),
                     DateCustomField("Date Of Birth",
-                        data['dob' + numberOfMember.toString()], (val) {
-                      data['dob' + numberOfMember.toString()] = val;
+                        data['doba' + memberNumber.toString()],
+                        (DateTime val) {
+                      data['doba' + memberNumber.toString()] =
+                          val.toIso8601String();
                     }),
                     DropdownCustomField(
                         'Gender',
-                        data['gender' + numberOfMember.toString()],
+                        data['gendera' + memberNumber.toString()],
                         ['M', 'F'],
-                        (val) {}),
+                        (val) {data['gendera' + memberNumber.toString()]=val;}),
                     DropdownCustomField(
                         'Accommodation',
-                        data['dob' + numberOfMember.toString()],
+                        data['accoma' + memberNumber.toString()],
                         ['Y', 'N'],
-                        (val) {}),
+                        (val) {data['accoma' + memberNumber.toString()]=val;}),
                     heading('Mobile Number'),
                     textField("Number", (value) {
-                      data['nm' + numberOfMember.toString()] = value;
-                    }, data['nm' + numberOfMember.toString()],
+                      data['nma' + memberNumber.toString()] = value;
+                    }, data['nma' + memberNumber.toString()],
                         TextInputType.phone),
                     Container(
                         margin: EdgeInsets.only(bottom: 10.0, top: 15),
@@ -343,43 +349,39 @@ class RegistrationsSessionState extends State<RegistrationsSession> {
                           style: TextStyle(fontSize: 15),
                         )),
                     textField("Address Line 1", (value) {
-                      data['addrln' + numberOfMember.toString()] =
-                          value;
-                    }, data['addrln' + numberOfMember.toString()],
+                      data['addrlnc' + memberNumber.toString()] = value;
+                    }, data['addrlnc' + memberNumber.toString()],
                         TextInputType.multiline),
                     textField("City", (value) {
-                      data['city' + numberOfMember.toString()] = value;
-                    }, data['city' + numberOfMember.toString()],
+                      data['cityk' + memberNumber.toString()] = value;
+                    }, data['cityk' + memberNumber.toString()],
                         TextInputType.text),
                     textField("Country", (value) {
-                      data['country' + numberOfMember.toString()] =
-                          value;
-                    }, data['country' + numberOfMember.toString()],
+                      data['countryl' + memberNumber.toString()] = value;
+                    }, data['countryl' + memberNumber.toString()],
                         TextInputType.text),
                     heading("CNIC/B-Form Number"),
                     textField("Number", (value) {
-                      data['cnicnumber' + numberOfMember.toString()] =
-                          value;
-                    }, data['cnicnumber' + numberOfMember.toString()],
+                      data['cnicnumberd' + memberNumber.toString()] = value;
+                    }, data['cnicnumberd' + memberNumber.toString()],
                         TextInputType.number),
                     heading("Email Address"),
                     textField("@", (value) {
-                      data['emailaddress' + numberOfMember.toString()] =
-                          value;
-                    }, data['emailaddress' + numberOfMember.toString()],
+                      data['emailaddressd' + memberNumber.toString()] = value;
+                    }, data['emailaddressd' + memberNumber.toString()],
                         TextInputType.emailAddress),
                     heading("Gaurdian"),
                     textField("First Name", (value) {
-                      data['fn' + numberOfMember.toString()] = value;
-                    }, data['fn' + numberOfMember.toString()],
+                      data['fnd' + memberNumber.toString()] = value;
+                    }, data['fnd' + memberNumber.toString()],
                         TextInputType.text),
                     textField("Last Name", (value) {
-                      data['ln' + numberOfMember.toString()] = value;
-                    }, data['ln' + numberOfMember.toString()],
+                      data['lnd' + memberNumber.toString()] = value;
+                    }, data['lnd' + memberNumber.toString()],
                         TextInputType.text),
                     textField("Mobile Number", (value) {
-                      data['mn' + numberOfMember.toString()] = value;
-                    }, data['mn' + numberOfMember.toString()],
+                      data['mnd' + memberNumber.toString()] = value;
+                    }, data['mnd' + memberNumber.toString()],
                         TextInputType.phone),
                     heading("Waiver Of Liability"),
                     imageField("Upload"),
@@ -389,7 +391,7 @@ class RegistrationsSessionState extends State<RegistrationsSession> {
                     imageField("Upload"),
                     helpText(
                         "Please download the waiver of liability form (for accommodation) from the website. Print and sign it and upload the picture of signed form here. Image should in jpeg or jpg with maximum allowed size of 500 KB."),
-                    navButtons(numberOfMember)
+                    navButtons(memberNumber)
                   ],
                 )))));
   }
@@ -408,8 +410,7 @@ class RegistrationsSessionState extends State<RegistrationsSession> {
                         child:
                             Text("Event Page", style: TextStyle(fontSize: 25))),
                     DropdownCustomField(
-                        'Number of events', data['noe'], ['2', '3'],
-                        (val) {
+                        'Number of events', data['noe'], ['2', '3'], (val) {
                       data['noe'] = val;
                     }),
                     DropdownCustomField('Event Pref #1', data['e1'], [
@@ -502,13 +503,13 @@ class RegistrationsSessionState extends State<RegistrationsSession> {
                       data['explaine'] = value;
                     }, data['explaine'], TextInputType.multiline),
                     DateCustomField("Date Of Birth", data['dob0'],
-                        (val) {
-                      data['dob0'] = val;
+                        (DateTime val) {
+                      data['dob0'] = val.toIso8601String();
                     }),
-                    DropdownCustomField('Gender', data['gendere'],
-                        ['M', 'F'], (val) {}),
-                    DropdownCustomField('Accommodation', data['accome'],
-                        ['Y', 'N'], (val) {}),
+                    DropdownCustomField(
+                        'Gender', data['gendere'], ['M', 'F'], (val) {}),
+                    DropdownCustomField(
+                        'Accommodation', data['accome'], ['Y', 'N'], (val) {}),
                     heading('Mobile Number'),
                     textField("Number", (value) {
                       data['nme'] = value;

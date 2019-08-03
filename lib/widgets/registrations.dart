@@ -66,7 +66,7 @@ class DateCustomFieldState extends State<DateCustomField> {
   @override
   void initState() {
     super.initState();
-    selectedDate = (widget._initial == null)?DateTime(1997):widget._initial;
+    selectedDate = (widget._initial == null)?DateTime(1997):DateTime.parse(widget._initial);
   }
   @override
   Widget build(BuildContext context) {
@@ -74,6 +74,7 @@ class DateCustomFieldState extends State<DateCustomField> {
         margin: EdgeInsets.only(bottom: 20.0),
         child: InkWell(
           onTap: () => selectDate(context).then((e) {
+            print('hi');
             if (e != null)
               setState(() {
                 widget._callback(e);
