@@ -215,8 +215,8 @@ class RegistrationsSessionState extends State<RegistrationsSession> {
                         child: Text("Head Delegate",
                             style: TextStyle(fontSize: 25))),
                     heading("Picture"),
-                    showImage(),
-                    imageField("Upload"),
+                    // showImage(),
+                    imageField("Upload", 'img1'),
                     helpText("Max File Size Allowed 3MB"),
                     Container(
                         margin: EdgeInsets.only(bottom: 10.0, top: 15),
@@ -280,11 +280,11 @@ class RegistrationsSessionState extends State<RegistrationsSession> {
                       data['gaudrainnm1'] = value;
                     }, data['gaudrainnm1'], TextInputType.phone),
                     heading("Waiver Of Liability"),
-                    imageField("Upload"),
+                    imageField("Upload", 'img2'),
                     helpText(
                         "Please download the waiver of liability form from the website. Print and sign it and upload the picture of signed form here. Image should in jpeg or jpg with maximum allowed size of 500 KB."),
                     heading("Waiver Of Liability-Accommodation"),
-                    imageField("Upload"),
+                    imageField("Upload", 'img3'),
                     helpText(
                         "Please download the waiver of liability form (for accommodation) from the website. Print and sign it and upload the picture of signed form here. Image should in jpeg or jpg with maximum allowed size of 500 KB."),
                     navButtons(i)
@@ -308,8 +308,8 @@ class RegistrationsSessionState extends State<RegistrationsSession> {
                         child: Text("Member ${memberNumber}",
                             style: TextStyle(fontSize: 25))),
                     heading("Picture"),
-                    showImage(),
-                    imageField("Upload"),
+                    // showImage(),
+                    imageField("Upload", 'img4' + memberNumber.toString()),
                     helpText("Max File Size Allowed 3MB"),
                     Container(
                         margin: EdgeInsets.only(bottom: 10.0, top: 15),
@@ -317,12 +317,16 @@ class RegistrationsSessionState extends State<RegistrationsSession> {
                           "Name",
                           style: TextStyle(fontSize: 15),
                         )),
-                    textField(
-                        "First Name", (value) {data['fnm' + memberNumber.toString()]=value;}, data['fnm' + memberNumber.toString()], TextInputType.text),
-                    textField(
-                        "Last Name", (value) {data['lnm' + memberNumber.toString()]=value;}, data['lnm' + memberNumber.toString()], TextInputType.text),
-                    DateCustomField("Date Of Birth",
-                        data['doba' + memberNumber.toString()],
+                    textField("First Name", (value) {
+                      data['fnm' + memberNumber.toString()] = value;
+                    }, data['fnm' + memberNumber.toString()],
+                        TextInputType.text),
+                    textField("Last Name", (value) {
+                      data['lnm' + memberNumber.toString()] = value;
+                    }, data['lnm' + memberNumber.toString()],
+                        TextInputType.text),
+                    DateCustomField(
+                        "Date Of Birth", data['doba' + memberNumber.toString()],
                         (DateTime val) {
                       data['doba' + memberNumber.toString()] =
                           val.toIso8601String();
@@ -330,13 +334,15 @@ class RegistrationsSessionState extends State<RegistrationsSession> {
                     DropdownCustomField(
                         'Gender',
                         data['gendera' + memberNumber.toString()],
-                        ['M', 'F'],
-                        (val) {data['gendera' + memberNumber.toString()]=val;}),
+                        ['M', 'F'], (val) {
+                      data['gendera' + memberNumber.toString()] = val;
+                    }),
                     DropdownCustomField(
                         'Accommodation',
                         data['accoma' + memberNumber.toString()],
-                        ['Y', 'N'],
-                        (val) {data['accoma' + memberNumber.toString()]=val;}),
+                        ['Y', 'N'], (val) {
+                      data['accoma' + memberNumber.toString()] = val;
+                    }),
                     heading('Mobile Number'),
                     textField("Number", (value) {
                       data['nma' + memberNumber.toString()] = value;
@@ -384,11 +390,11 @@ class RegistrationsSessionState extends State<RegistrationsSession> {
                     }, data['mnd' + memberNumber.toString()],
                         TextInputType.phone),
                     heading("Waiver Of Liability"),
-                    imageField("Upload"),
+                    imageField("Upload", 'img5' + memberNumber.toString()),
                     helpText(
                         "Please download the waiver of liability form from the website. Print and sign it and upload the picture of signed form here. Image should in jpeg or jpg with maximum allowed size of 500 KB."),
                     heading("Waiver Of Liability-Accommodation"),
-                    imageField("Upload"),
+                    imageField("Upload", 'img6' + memberNumber.toString()),
                     helpText(
                         "Please download the waiver of liability form (for accommodation) from the website. Print and sign it and upload the picture of signed form here. Image should in jpeg or jpg with maximum allowed size of 500 KB."),
                     navButtons(memberNumber)
@@ -546,11 +552,11 @@ class RegistrationsSessionState extends State<RegistrationsSession> {
                     textField(
                         "Mobile Number", (value) {}, null, TextInputType.phone),
                     heading("Waiver Of Liability"),
-                    imageField("Upload"),
+                    imageField("Upload", 'img7'),
                     helpText(
                         "Please download the waiver of liability form from the website. Print and sign it and upload the picture of signed form here. Image should in jpeg or jpg with maximum allowed size of 500 KB."),
                     heading("Waiver Of Liability-Accommodation"),
-                    imageField("Upload"),
+                    imageField("Upload", 'img8'),
                     helpText(
                         "Please download the waiver of liability form (for accommodation) from the website. Print and sign it and upload the picture of signed form here. Image should in jpeg or jpg with maximum allowed size of 500 KB."),
                     navButtons(i)
@@ -569,37 +575,65 @@ class RegistrationsSessionState extends State<RegistrationsSession> {
   }
 
   Future<File> imageFile;
-  Widget imageField(String label) {
-    return RaisedButton(
-      color: Theme.of(context).accentColor,
-      onPressed: () {
-        setState(() {
-          imageFile = ImagePicker.pickImage(source: ImageSource.gallery);
-          imageFile.then((e) {
-            imageFile = thumbnail(e);
-          });
+  Widget imageField(String label, String dataKey) {
+    return FormField(
+        onSaved: (val) {},
+        initialValue: data[dataKey],
+        validator: (value) {
+          if (data[dataKey] == null) {
+            return "Required";
+          } else
+            return null;
+        },
+        builder: (FormFieldState state) {
+          return RaisedButton(
+            color: Theme.of(context).accentColor,
+            onPressed: () {
+              
+              setState(() {
+                imageFile = ImagePicker.pickImage(source: ImageSource.gallery);
+                imageFile.then((e) {
+                  data[dataKey] = thumbnail(e);
+                  data[dataKey].then((va) {
+                    setState(() {});
+                  });
+                });
+              });
+            },
+            child: FutureBuilder(
+              future: data[dataKey],
+              builder: (BuildContext context, AsyncSnapshot snapshot) {
+                print(snapshot.connectionState);
+                if (snapshot.connectionState == ConnectionState.done &&
+                    snapshot.data != null)
+                  return Text(snapshot.data.path.split('/').removeLast());
+                else if (snapshot.connectionState == ConnectionState.waiting)
+                  return Text("Uploading");
+                else
+                  return Text("Upload");
+              },
+            ),
+          );
         });
-      },
-      child: Text(label),
-    );
   }
 
-  Widget showImage() {
-    return FutureBuilder<File>(
-      future: imageFile,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done &&
-            snapshot.data != null) {
-          return prefix0.Image.file(
-            snapshot.data,
-            fit: BoxFit.contain,
-          );
-        } else {
-          return prefix0.Image.file(
-            File('${Directory.systemTemp.path}/thumbnail.png'),
-          );
-        }
-      },
-    );
-  }
+  // Widget showImage() {
+  //   return FutureBuilder<File>(
+  //     future: imageFile,
+  //     builder: (context, snapshot) {
+  //       if (snapshot.connectionState == ConnectionState.done &&
+  //           snapshot.data != null) {
+  //         print('here');
+  //         return prefix0.Image.file(
+  //           snapshot.data,
+  //           fit: BoxFit.contain,
+  //         );
+  //       } else {
+  //         return prefix0.Image.file(
+  //           File('${Directory.systemTemp.path}/thumbnail.png'),
+  //         );
+  //       }
+  //     },
+  //   );
+  // }
 }
