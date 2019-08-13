@@ -114,9 +114,9 @@ class RegistrationsSessionState extends State<RegistrationsSession> {
                           1; // -1 because head delegate is double counted otherwise
                       const int unitializedPageStack = 2;
                       int recommendedPageStack = 2 + numberOfMember + 2;
-                      if (unitializedPageStack != _pages.length &&
-                          recommendedPageStack != _pages.length) {
-                        for (int i = 0; i < numberOfMember + 2; i++) {
+                      print("hi" + _pages.length.toString());
+                      if (recommendedPageStack != _pages.length) {
+                        for (int i = 0; unitializedPageStack != _pages.length; i++) {
                           _pages.removeLast();
                         }
                       }
@@ -127,6 +127,7 @@ class RegistrationsSessionState extends State<RegistrationsSession> {
                         _pages.add(eventPage);
                         _pages.add(confirmationPage);
                       }
+                      print("BYE" + _pages.length.toString());
                     }),
                     DropdownCustomField(
                         'Will a Faculty Adviser accompany you to LUMS?',
@@ -184,8 +185,11 @@ class RegistrationsSessionState extends State<RegistrationsSession> {
           onPressed: () {
             FormState formState = formKey[i].currentState;
             if (formState.validate()) {
-              formState.save();
-              _formDataRecorder.save(data);
+              () async {
+                formState.save();
+              }()
+                  .then((onValue) => _formDataRecorder.save(data));
+
               if (pageNumber < _pages.length - 1)
                 setState(() {
                   pageNumber += 1;
@@ -589,7 +593,6 @@ class RegistrationsSessionState extends State<RegistrationsSession> {
           return RaisedButton(
             color: Theme.of(context).accentColor,
             onPressed: () {
-              
               setState(() {
                 imageFile = ImagePicker.pickImage(source: ImageSource.gallery);
                 imageFile.then((e) {
