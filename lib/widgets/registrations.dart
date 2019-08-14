@@ -74,7 +74,7 @@ class DateCustomFieldState extends State<DateCustomField> {
         margin: EdgeInsets.only(bottom: 20.0),
         child: InkWell(
           onTap: () => selectDate(context).then((e) {
-            print('hi');
+            
             if (e != null)
               setState(() {
                 widget._callback(e);
