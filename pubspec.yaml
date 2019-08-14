@@ -1,5 +1,5 @@
 name: psifi
-description: A new Flutter project.
+description: The official PsiFi XI App developed by the Spades IT Department - Moiz Suhail and Zoraiz Qureshi.
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -37,7 +37,6 @@ dependencies:
   font_awesome_flutter: ^8.5.0
   url_launcher: ^5.1.2
   image:
-  # path_provider: ^0.4.1
 dev_dependencies:
   flutter_test:
     sdk: flutter
