@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:psifi/pages/notificationportal.dart';
 import 'package:psifi/pages/registrationLanding.dart';
+import 'package:psifi/pages/socialredirect.dart';
 import 'package:psifi/utils/authentication.dart';
 import 'package:psifi/pages/eventsportal.dart';
 
@@ -69,9 +70,9 @@ class NavigationState extends State<Navigation> with SingleTickerProviderStateMi
       body: TabBarView(
         children: <Widget>[
           NotificationPortal(widget._auth, _isAdmin),
-          EventsPortal(_isAdmin),
+          EventsPortal(),
           RegistrationLanding(),
-          Text("5")
+          SocialRedirectPage()
         ],
         controller: _tabController,
       ),

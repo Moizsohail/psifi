@@ -24,7 +24,7 @@ class ParseMessageState extends State<ParseMessage>{
     return ListView.builder(
       itemCount: 1,
       itemBuilder: (context,index){
-      Text("hi");
+        return Text("hi");
       },
     );
   }

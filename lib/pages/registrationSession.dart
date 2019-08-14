@@ -305,7 +305,7 @@ class RegistrationsSessionState extends State<RegistrationsSession> {
                   children: <Widget>[
                     Container(
                         margin: EdgeInsets.symmetric(vertical: 30.0),
-                        child: Text("Member ${memberNumber}",
+                        child: Text("Member $memberNumber",
                             style: TextStyle(fontSize: 25))),
                     heading("Picture"),
                     showImage(),
