@@ -19,6 +19,7 @@ enum FormType { login, register }
 enum LoginButtonState { normal, loading, success, error }
 
 class LoginRegisterPageState extends State<LoginRegisterPage> {
+  bool passwordHidden;
   LoginButtonState _loginButtonState =
       LoginButtonState.normal; //normal initially
   final formKey = GlobalKey<FormState>();
@@ -44,6 +45,7 @@ class LoginRegisterPageState extends State<LoginRegisterPage> {
   @override
   void initState() {
     super.initState();
+    passwordHidden = true;
     _messaging.getToken().then((token) {
       print(token);
       _firestore
@@ -208,6 +210,11 @@ class LoginRegisterPageState extends State<LoginRegisterPage> {
 
               TextFormField(
                   decoration: new InputDecoration(
+                    suffixIcon:IconButton(icon:(passwordHidden?Icon(Icons.visibility):Icon(Icons.visibility_off)),
+                    onPressed: () =>setState(() {
+                     passwordHidden = !passwordHidden; 
+                    })),
+                    
                     labelText: "Enter Password",
                     fillColor: Colors.white,
                     border: new OutlineInputBorder(
@@ -224,7 +231,9 @@ class LoginRegisterPageState extends State<LoginRegisterPage> {
                   keyboardType: TextInputType.text,
                   style: new TextStyle(
                     fontFamily: "Poppins",
+
                   ),
+                  obscureText: passwordHidden,
                   onSaved: (value) {
                     return _password = value;
                   }),

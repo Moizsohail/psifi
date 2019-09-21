@@ -15,23 +15,22 @@ class NotificationPage extends StatefulWidget{
 
 class NotificationPageState extends State<NotificationPage>{
   final Directory tempDir = Directory.systemTemp;
-  var json = JsonEncoder();
-  var col = {'text':"hi",'images':['a','v']};
+  
   
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         body: NestedScrollView(
-          body: Text("hi"),
+          body: Text(widget._doc['Description']),
           headerSliverBuilder: (context,innerBoxIsScrolled) => <Widget>[
               SliverAppBar(
                 expandedHeight: 200.0,
                 floating: false,
                 pinned: true,
                 flexibleSpace: FlexibleSpaceBar(
-                  title: Text("hi"),
+                  title: Text(widget._doc['Title']),
                   background:Hero(
-                    child:Image.asset('${tempDir.path}/${widget._doc["PublisherId"]}.jpg',
+                    child:Image.asset('${tempDir.path}/${widget._doc["PublisherId"]}.png',
                         fit: BoxFit.cover,
                     ),
                     tag: 'lol'+widget._doc.documentID,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:psifi/utils/authentication.dart';
 import 'package:psifi/utils/firestorehelper.dart';
+import 'package:psifi/utils/thumbnail.dart';
 //import 'package:firebase_storage/firebase_storage.dart';
 import '../utils/cachedImageProvider.dart';
 import 'notificationadmin.dart';
@@ -92,13 +93,13 @@ class NotificationPortalState extends State<NotificationPortal> {
 
   Widget notifCard(DocumentSnapshot doc) {
     String fileName =
-        doc['PublisherId'] + '.jpg'; //get image fileName from publisher's ID
+        doc['PublisherId']; //get image fileName from publisher's ID
     this._imageProvider.addName(fileName).then((isDownloaded) {
       if (isDownloaded) {
         setState(() {});
       }
     });
-
+    
     return ListTile(
       onTap: () {
         //tapping a notification opens up its (doc's) notification page
@@ -107,7 +108,7 @@ class NotificationPortalState extends State<NotificationPortal> {
       },
       leading: Hero(
         child: CircleAvatar(
-          backgroundImage: this._imageProvider.getImage(fileName),
+          backgroundImage: this._imageProvider.getImage('$fileName'),
           backgroundColor: Theme.of(context).accentColor,
         ),
         tag: "lol" + doc.documentID,
