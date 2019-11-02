@@ -37,7 +37,7 @@ class NotificationAdminState extends State<NotificationAdmin>{
                 child: Text(
                   _submitted?"Submitted":"Submit",
                   style: TextStyle(color: Colors.white)),
-                color:Colors.redAccent, 
+                color:Colors.redAccent[100], 
                 onPressed: (){
                   if(widget._edit){
                     return _submitted?null:updateData;

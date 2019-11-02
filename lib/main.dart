@@ -13,21 +13,21 @@ class MyApp extends StatelessWidget { //ROOT
       title: 'PSIFI XI',
       debugShowCheckedModeBanner:false,
       theme: ThemeData(
-        primaryColor: Colors.black, 
-        accentColor: Colors.amberAccent,
+        primaryColor: Color(0xff060e66), 
+        accentColor: Colors.white,
         primaryTextTheme: TextTheme(
           title: TextStyle(
-            color: Colors.amberAccent,
+            color: Colors.white
           )
         ),
         iconTheme: IconThemeData(
           color: Colors.white
         ),
         primaryIconTheme: IconThemeData(
-          color: Colors.white
+          color: Colors.redAccent[100]
         ),
         appBarTheme: AppBarTheme(
-          color: Colors.black
+          color: Color(0xff060e66)
         ),
         bottomAppBarColor: Colors.red
       ),

@@ -29,7 +29,7 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.2
   flare_flutter: ^1.5.4
-  google_maps_flutter: ^0.4.0
+  flutter_launcher_icons: ^0.7.4
   path_provider: ^1.2.0
   page_view_indicator: ^2.0.0
   intl: ^0.15.8
@@ -41,7 +41,10 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   
-
+flutter_icons:
+#  image_path: "assets/images/icon-128x128.png"
+  image_path_android: "images/psifixilogo.png"
+  android: true # can specify file name here e.g. "ic_launcher"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://www.dartlang.org/tools/pub/pubspec

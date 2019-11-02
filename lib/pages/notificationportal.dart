@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:psifi/utils/authentication.dart';
 import 'package:psifi/utils/firestorehelper.dart';
-import 'package:psifi/utils/thumbnail.dart';
 //import 'package:firebase_storage/firebase_storage.dart';
 import '../utils/cachedImageProvider.dart';
 import 'notificationadmin.dart';
@@ -41,7 +40,7 @@ class NotificationPortalState extends State<NotificationPortal> {
                 Icons.add,
                 color: Theme.of(context).accentColor,
               ),
-              backgroundColor: Theme.of(context).primaryColor,
+              backgroundColor: Colors.redAccent[100],
               onPressed: () {
                 Navigator.push(
                     context,
@@ -136,7 +135,6 @@ class NotificationPortalState extends State<NotificationPortal> {
         child: StreamBuilder(
             stream: stream,
             builder: (context, snapshot) {
-              print('hi');
               if (snapshot.hasError) {
                 return new Text("ERROR ${snapshot.error}");
               }
@@ -226,7 +224,7 @@ class NotificationPortalState extends State<NotificationPortal> {
                             "Yes",
                             style: TextStyle(color: Colors.white),
                           ),
-                          color: Colors.blueAccent,
+                          color: Colors.blue[900],
                           onPressed: () {
                             _firestore.deleteData(doc);
                             Navigator.pop(context);
@@ -240,7 +238,7 @@ class NotificationPortalState extends State<NotificationPortal> {
                             "No!",
                             style: TextStyle(color: Colors.white),
                           ),
-                          color: Colors.redAccent,
+                          color: Colors.redAccent[100],
                           onPressed: () {
                             Navigator.pop(context);
                           },

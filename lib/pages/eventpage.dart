@@ -85,8 +85,9 @@ class EventPageState extends State<EventPage>{
                   Text(widget._doc.eh1, style: new TextStyle(fontSize: 16.0)),
                   Row(children: <Widget>[Icon(Icons.phone, size: 15.0, color: Theme.of(context).primaryColor), Text(' ' + widget._doc.eh1Contact, style: new TextStyle(fontSize: 14.0)),],),
                 ],),
-                _conditionalEH2()
+                _conditionalEH2(),
             ],),
+            _conditionalEH3()
           ],),
         ),
       ],
@@ -106,6 +107,21 @@ class EventPageState extends State<EventPage>{
       ),
       Text(widget._doc.eh2, style: new TextStyle(fontSize: 16.0)),
       Row(children: <Widget>[Icon(Icons.phone, size: 15.0, color: Theme.of(context).primaryColor), Text(' ' + widget._doc.eh2Contact, style: new TextStyle(fontSize: 14.0)),],),
+    ],);
+  }
+
+  Widget _conditionalEH3(){
+    if (widget._doc.eh3 == "NONE"){
+      return Container();
+    }
+    return Column(children: <Widget>[
+      CircleAvatar(
+        backgroundImage: AssetImage(widget._doc.eh3Image),
+        backgroundColor: Theme.of(context).accentColor,
+        maxRadius: 30,
+      ),
+      Text(widget._doc.eh3, style: new TextStyle(fontSize: 16.0)),
+      Row(children: <Widget>[Icon(Icons.phone, size: 15.0, color: Theme.of(context).primaryColor), Text(' ' + widget._doc.eh3Contact, style: new TextStyle(fontSize: 14.0)),],),
     ],);
   }
 }
