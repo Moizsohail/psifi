@@ -25,7 +25,7 @@ class NavigationState extends State<Navigation> with SingleTickerProviderStateMi
       _isAdmin = adminList.contains(userUID); //if adminlist contains the user UID then isAdmin
     });
 
-    _tabController = TabController(length: 4,vsync: this);
+    _tabController = TabController(length: 3,vsync: this);
     _tabController.addListener((){
       setState(() {
         switch (_tabController.index){
@@ -35,10 +35,10 @@ class NavigationState extends State<Navigation> with SingleTickerProviderStateMi
           case 1:
             _title = "Events";
             break;
+          // case 2:
+          //   _title = "Register";
+          //   break;
           case 2:
-            _title = "Register";
-            break;
-          case 3:
             _title = "Socials";
             break;
         }
@@ -71,7 +71,7 @@ class NavigationState extends State<Navigation> with SingleTickerProviderStateMi
         children: <Widget>[
           NotificationPortal(widget._auth, _isAdmin),
           EventsPortal(),
-          RegistrationLanding(),
+          //RegistrationLanding(),
           SocialRedirectPage()
         ],
         controller: _tabController,
@@ -88,9 +88,9 @@ class NavigationState extends State<Navigation> with SingleTickerProviderStateMi
             Tab(
               child: Icon(Icons.event),
             ),
-            Tab(
-              child: Icon(Icons.payment),
-            ),
+            // Tab(
+            //   child: Icon(Icons.payment),
+            // ),
             Tab(
               child: Icon(Icons.people),
             )

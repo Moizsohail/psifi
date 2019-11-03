@@ -121,7 +121,7 @@ class EventPageState extends State<EventPage>{
         maxRadius: 30,
       ),
       Text(widget._doc.eh3, style: new TextStyle(fontSize: 16.0)),
-      Row(children: <Widget>[Icon(Icons.phone, size: 15.0, color: Theme.of(context).primaryColor), Text(' ' + widget._doc.eh3Contact, style: new TextStyle(fontSize: 14.0)),],),
+      Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[Icon(Icons.phone, size: 15.0, color: Theme.of(context).primaryColor), Text(' ' + widget._doc.eh3Contact, style: new TextStyle(fontSize: 14.0)),],),
     ],);
   }
 }
