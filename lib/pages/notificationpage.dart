@@ -32,7 +32,7 @@ class NotificationPageState extends State<NotificationPage>{
                     child:Image.asset('${tempDir.path}/${widget._doc["PublisherId"]}.png',
                         fit: BoxFit.cover,
                     ),
-                    tag: 'lol'+widget._doc.documentID,
+                    tag: widget._doc.documentID,
                   )
                 ),
               )

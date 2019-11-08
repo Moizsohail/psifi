@@ -13,7 +13,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.example.psifi</string>
+	<string>com.spades.psifixi</string>
 	<key>PROJECT_ID</key>
 	<string>psifixi</string>
 	<key>STORAGE_BUCKET</key>

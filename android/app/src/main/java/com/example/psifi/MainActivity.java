@@ -1,4 +1,4 @@
-package com.example.psifi;
+package com.spades.psifixi;
 
 import android.os.Bundle;
 import io.flutter.app.FlutterActivity;
