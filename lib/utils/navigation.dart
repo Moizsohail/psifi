@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:psifi/pages/notificationportal.dart';
-import 'package:psifi/pages/registrationLanding.dart';
 import 'package:psifi/pages/socialredirect.dart';
 import 'package:psifi/utils/authentication.dart';
 import 'package:psifi/pages/eventsportal.dart';

@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:psifi/utils/authentication.dart';
 import 'package:psifi/utils/firestorehelper.dart';
-//import 'package:firebase_storage/firebase_storage.dart';
-import '../utils/cachedImageProvider.dart';
 import 'notificationadmin.dart';
 import 'notificationpage.dart';
 
@@ -22,7 +20,6 @@ class NotificationPortalState extends State<NotificationPortal> {
   Stream<QuerySnapshot> stream;
 
   bool firstTime = true;
-  CachedImageProvider _imageProvider = CachedImageProvider();
   FirestoreHelper _firestore = FirestoreHelper("Notifications");
 
   @override
@@ -90,15 +87,7 @@ class NotificationPortalState extends State<NotificationPortal> {
     return "Just Now";
   }
 
-  Widget notifCard(DocumentSnapshot doc) {
-    String fileName =
-        doc['PublisherId']; //get image fileName from publisher's ID
-    this._imageProvider.addName(fileName).then((isDownloaded) {
-      if (isDownloaded) {
-        setState(() {});
-      }
-    });
-    
+  Widget notifCard(DocumentSnapshot doc) {    
     return ListTile(
       onTap: () {
         //tapping a notification opens up its (doc's) notification page
@@ -107,20 +96,20 @@ class NotificationPortalState extends State<NotificationPortal> {
       },
       leading: Hero(
         child: CircleAvatar(
-          backgroundImage: this._imageProvider.getImage('$fileName'),
+          backgroundImage: AssetImage('images/psifixilogo.png'),
           backgroundColor: Theme.of(context).accentColor,
         ),
-        tag: "lol" + doc.documentID,
+        tag: doc.documentID,
       ),
       title: Text(
         doc['Title'],
-        style: TextStyle(fontSize: 30),
+        style: TextStyle(fontSize: 18),
         overflow: TextOverflow.ellipsis,
       ),
       trailing: Text(dateParser(DateTime.fromMicrosecondsSinceEpoch(
           doc['PostTime'].seconds * 1000000))),
       subtitle: Text(' ' + doc['Description'],
-          maxLines: 2, overflow: TextOverflow.ellipsis),
+          maxLines: 3, overflow: TextOverflow.ellipsis),
     );
   }
 

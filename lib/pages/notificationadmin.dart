@@ -15,6 +15,7 @@ class NotificationAdminState extends State<NotificationAdmin>{
   var _form = GlobalKey<FormState>();
   String _title = "";
   String _message = "";
+  String _url = "";
   bool _submitted = false;
   @override
   
@@ -32,6 +33,7 @@ class NotificationAdminState extends State<NotificationAdmin>{
             children: <Widget>[
               buildTextFormField('Title',(val)=>_title=val),
               buildTextFormField('Description',(val)=>_message=val),
+              buildTextFormField('URL',(val)=>_url=val),
               SizedBox(height: 10),
               RaisedButton(
                 child: Text(
@@ -60,7 +62,7 @@ class NotificationAdminState extends State<NotificationAdmin>{
       ),
       maxLines: text == "Description" ? null:1,
       validator: (value){
-        if (value.isEmpty) {
+        if (value.isEmpty && text != "URL") { //URLs may be left empty
           return 'Required';
         }
         return null;
@@ -79,6 +81,7 @@ class NotificationAdminState extends State<NotificationAdmin>{
         updateData({
         'Title':_title,
         'Description':_message,
+        'URL':_url,
         'Priority':widget._doc['Priority'],
         'PublisherId':widget._doc['PublisherId'],
         'PostTime':widget._doc['PostTime']
@@ -96,6 +99,7 @@ class NotificationAdminState extends State<NotificationAdmin>{
       await Firestore.instance.collection('Notifications').add({
         'Title': _title,
         'Description': _message,
+        'URL':_url,
         'Priority': 1,
         'PublisherId':await widget._auth.getCurrentUserUID(),
         'PostTime': DateTime.now()
