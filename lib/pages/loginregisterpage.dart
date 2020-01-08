@@ -23,20 +23,20 @@ class LoginRegisterPageState extends State<LoginRegisterPage> {
   LoginButtonState _loginButtonState =
       LoginButtonState.normal; //normal initially
   final formKey = GlobalKey<FormState>();
-  final FirebaseMessaging _messaging =
-      FirebaseMessaging(); //firebase messaging object created
+  // final FirebaseMessaging _messaging =
+      // FirebaseMessaging(); //firebase messaging object created
   FirestoreHelper _firestore = FirestoreHelper(
       "pushtokens"); //helper functions for pushtokens collection
 
-  void fireMessagingListeners() {
-    //requestNotificationsPermissions?
-    _messaging.configure(
-        //Firebase MessageHandler setup, functions to perform on specific actions
-        onMessage: (message) async => print('onMessage $message'),
-        onResume: (message) async => print('onResume $message'),
-        onLaunch: (message) async =>
-            print('onLaunch $message')); //simply printing for now
-  }
+  // void fireMessagingListeners() {
+  //   //requestNotificationsPermissions?
+  //   _messaging.configure(
+  //       //Firebase MessageHandler setup, functions to perform on specific actions
+  //       onMessage: (message) async => print('onMessage $message'),
+  //       onResume: (message) async => print('onResume $message'),
+  //       onLaunch: (message) async =>
+  //           print('onLaunch $message')); //simply printing for now
+  // }
 
   FormType _formType = FormType.login; //login form initially
   String _email = "", _password = "";
@@ -46,12 +46,12 @@ class LoginRegisterPageState extends State<LoginRegisterPage> {
   void initState() {
     super.initState();
     passwordHidden = true;
-    _messaging.getToken().then((token) {
-      print(token);
-      _firestore
-          .addUniqueData({"devtoken": token}, "devtoken"); //adding a devtoken
-    });
-    fireMessagingListeners(); //firebase messaging listeners setup
+    // _messaging.getToken().then((token) {
+    //   print(token);
+    //   _firestore
+    //       .addUniqueData({"devtoken": token}, "devtoken"); //adding a devtoken
+    // });
+    // fireMessagingListeners(); //firebase messaging listeners setup
   }
 
   Widget loginBtn() {
