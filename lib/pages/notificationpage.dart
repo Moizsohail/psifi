@@ -21,7 +21,7 @@ class NotificationPageState extends State<NotificationPage>{
         body: NestedScrollView(
           body: Padding(
             padding: EdgeInsets.all(10.0),
-            child: Column(
+            child: ListView(
               children: <Widget>[
                 Text(widget._doc['Description']),
                 conditionalURL()
